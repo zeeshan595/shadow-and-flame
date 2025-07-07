@@ -1,7 +1,7 @@
-import { engine, Entity, SupportedThirdPartySceneManager, ThirdPartySceneManager } from "../core";
+import { Core } from "../core";
 import * as THREE from 'three';
 
-export class ThreeJsSceneManager extends ThirdPartySceneManager<THREE.Object3D> {
+export class ThreeJsSceneManager extends Core.ThirdPartySceneManager<THREE.Object3D> {
   private _cameras: Map<string, THREE.Camera> = new Map();
   private _scene = new THREE.Scene();
 
@@ -39,13 +39,13 @@ export class ThreeJsSceneManager extends ThirdPartySceneManager<THREE.Object3D> 
     }
     super.delete(key);
   }
-  override newObject(): THREE.Object3D {
+  override newObject(_entity: InstanceType<typeof Core.Entity>): THREE.Object3D {
     return new THREE.Object3D();
   }
   get scene(): THREE.Scene {
     return this._scene;
   }
-  override onRender(entities: Entity[]): void {
+  override onRender(entities: InstanceType<typeof Core.Entity>[]): void {
     for (const entity of entities) {
       const threejsObject = this._map.get(entity.uuid);
       if (!threejsObject) continue;
@@ -77,11 +77,15 @@ export class ThreeJsSceneManager extends ThirdPartySceneManager<THREE.Object3D> 
 }
 
 export function addThreeJsObjectToScene(uuid: string, obj: THREE.Object3D, parent?: string) {
-  const sceneManager = engine.scene.getThirdPartySceneManager(SupportedThirdPartySceneManager.ThreeJs) as ThreeJsSceneManager;
+  const sceneManager = Core.engine.scene.getThirdPartySceneManager(
+    Core.SupportedThirdPartySceneManager.ThreeJs
+  ) as ThreeJsSceneManager;
   sceneManager.set(uuid, obj, parent);
 }
 
 export function removeThreeJsObjectFromScene(uuid: string) {
-  const sceneManager = engine.scene.getThirdPartySceneManager(SupportedThirdPartySceneManager.ThreeJs) as ThreeJsSceneManager;
+  const sceneManager = Core.engine.scene.getThirdPartySceneManager(
+    Core.SupportedThirdPartySceneManager.ThreeJs
+  ) as ThreeJsSceneManager;
   sceneManager.delete(uuid);
 }

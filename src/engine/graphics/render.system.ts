@@ -3,7 +3,7 @@ import { Vector2 } from "@/engine/core/vector";
 import { engine, EngineEventType } from "@/engine/core/engine";
 import { System } from "@/engine/core/system";
 import { ThreeJsSceneManager } from './scene.manager';
-import { SupportedThirdPartySceneManager } from '../core';
+import { Core } from '../core';
 
 export class RenderSystem extends System {
   private readonly _handler: THREE.WebGLRenderer;
@@ -28,12 +28,16 @@ export class RenderSystem extends System {
 
     addEventListener('resize', (e) => this.onResize(e));
     this._handler.setAnimationLoop(() => engine.onRender());
-    engine.scene.addThirdPartySceneManager(SupportedThirdPartySceneManager.ThreeJs, new ThreeJsSceneManager());
+    engine.scene.addThirdPartySceneManager(
+      Core.SupportedThirdPartySceneManager.ThreeJs, new ThreeJsSceneManager()
+    );
     engine.addEventListener(EngineEventType.SceneChanged, () => this.onEngineSceneChanged());
   }
 
   private onEngineSceneChanged() {
-    engine.scene.addThirdPartySceneManager(SupportedThirdPartySceneManager.ThreeJs, new ThreeJsSceneManager());
+    engine.scene.addThirdPartySceneManager(
+      Core.SupportedThirdPartySceneManager.ThreeJs, new ThreeJsSceneManager()
+    );
   }
 
   private onResize(_e: UIEvent) {
@@ -53,7 +57,9 @@ export class RenderSystem extends System {
   }
 
   override onRender() {
-    const sceneManager = engine.scene.getThirdPartySceneManager(SupportedThirdPartySceneManager.ThreeJs) as ThreeJsSceneManager;
+    const sceneManager = engine.scene.getThirdPartySceneManager(
+      Core.SupportedThirdPartySceneManager.ThreeJs
+    ) as ThreeJsSceneManager;
     for (const camera of sceneManager.cameras) {
       this._handler.render(
         sceneManager.scene, camera

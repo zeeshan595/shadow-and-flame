@@ -1,10 +1,10 @@
-import { Module } from "@/engine/core";
+import { Core } from "@/engine/core";
 import * as THREE from "three";
-import { addThreeJsObjectToScene, removeThreeJsObjectFromScene } from "../render/scene.manager";
+import { addThreeJsObjectToScene, removeThreeJsObjectFromScene } from "../graphics/scene.manager";
 
 export const _static_listener = new THREE.AudioListener();
 
-export class ListenerModule extends Module {
+export class ListenerModule extends Core.Module {
   private _object: THREE.Object3D;
   public static singleton?: ListenerModule;
 

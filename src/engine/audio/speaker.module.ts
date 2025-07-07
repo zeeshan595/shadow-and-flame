@@ -1,5 +1,5 @@
-import { addThreeJsObjectToScene, removeThreeJsObjectFromScene } from "../render/scene.manager";
-import { engine, Module } from "@/engine/core";
+import { addThreeJsObjectToScene, removeThreeJsObjectFromScene } from "../graphics/scene.manager";
+import { Core } from "@/engine/core";
 import { _static_listener } from "./listener.module";
 import * as THREE from "three";
 
@@ -8,7 +8,7 @@ export enum SpeakerType {
   ThreeDimensional = "3d",
 }
 
-export class SpeakerModule extends Module {
+export class SpeakerModule extends Core.Module {
   private _object: THREE.Object3D;
   private _speaker: THREE.Audio | THREE.PositionalAudio;
   private _speakerType: SpeakerType;
@@ -30,7 +30,7 @@ export class SpeakerModule extends Module {
 
   private autoplayHandler() {
     if (!this._autoplay) return;
-    if (engine.hasUserInteractedWithWindow) {
+    if (Core.engine.hasUserInteractedWithWindow) {
       if (!this._speaker.isPlaying)
         this._speaker.play();
     }
@@ -80,7 +80,7 @@ export class SpeakerModule extends Module {
     this.autoplayHandler();
   }
   play(queueIfUserHasNotInteracted = true) {
-    if (engine.hasUserInteractedWithWindow) {
+    if (Core.engine.hasUserInteractedWithWindow) {
       this._speaker.play();
     } else if (queueIfUserHasNotInteracted) {
       setTimeout(() => this.play(true), 100);

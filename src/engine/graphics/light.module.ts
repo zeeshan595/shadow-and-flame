@@ -3,8 +3,7 @@ import {
   removeThreeJsObjectFromScene,
   ThreeJsSceneManager
 } from "./scene.manager";
-import { Module } from "@/engine/core/module";
-import { Color, engine, Entity, SupportedThirdPartySceneManager, Vector3 } from "../core";
+import { Core } from "../core";
 import * as THREE from "three";
 
 export enum LightType {
@@ -30,10 +29,10 @@ export type PerspectiveShadowCameraProperties = {
   aspect: number;
 }
 
-export class LightModule extends Module {
+export class LightModule extends Core.Module {
   private _handler: THREE.Light;
   private _directionalLightVector: THREE.Vector3;
-  private _target?: Entity;
+  private _target?: InstanceType<typeof Core.Entity>;
 
   get intensity(): number {
     return this._handler.intensity;
@@ -41,11 +40,11 @@ export class LightModule extends Module {
   set intensity(value: number) {
     this._handler.intensity = value;
   }
-  get color(): Color {
+  get color(): InstanceType<typeof Core.Color> {
     const col = this._handler.color;
-    return new Color(col.r, col.g, col.b);
+    return new Core.Color(col.r, col.g, col.b);
   }
-  set color(value: Color) {
+  set color(value: InstanceType<typeof Core.Color>) {
     this._handler.color.setRGB(value.r, value.g, value.b);
   }
   get castShadows(): boolean {
@@ -54,17 +53,17 @@ export class LightModule extends Module {
   set castShadows(value: boolean) {
     this._handler.castShadow = value;
   }
-  set target(value: Entity) {
+  set target(value: InstanceType<typeof Core.Entity>) {
     this._target = value;
   }
-  get target(): Entity | undefined {
+  get target(): InstanceType<typeof Core.Entity> | undefined {
     return this._target;
   }
-  set directionalLightVector(value: Vector3) {
+  set directionalLightVector(value: InstanceType<typeof Core.Vector3>) {
     this._directionalLightVector.set(value.x, value.y, value.z);
   }
-  get directionalLightVector(): Vector3 {
-    return new Vector3(
+  get directionalLightVector(): InstanceType<typeof Core.Vector3> {
+    return new Core.Vector3(
       this._directionalLightVector.x,
       this._directionalLightVector.y,
       this._directionalLightVector.z
@@ -152,8 +151,8 @@ export class LightModule extends Module {
 
       let directionalLightVector = this.directionalLightVector.multiply(-1);
       if (this._target) {
-        const sceneManager = engine.scene.getThirdPartySceneManager(
-          SupportedThirdPartySceneManager.ThreeJs
+        const sceneManager = Core.engine.scene.getThirdPartySceneManager(
+          Core.SupportedThirdPartySceneManager.ThreeJs
         ) as ThreeJsSceneManager;
         const targetRef = sceneManager.get(this._target.uuid);
         if (!targetRef) {

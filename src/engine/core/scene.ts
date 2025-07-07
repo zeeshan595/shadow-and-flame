@@ -20,7 +20,7 @@ export abstract class ThirdPartySceneManager<T> {
   public delete(key: string): void {
     this._map.delete(key);
   }
-  public newObject(): T {
+  public newObject(_entity: Entity): T {
     throw new Error('not implemented');
   }
 
@@ -73,7 +73,7 @@ export class Scene {
     entity['_scene'] = this;
     this._entities.push(entity);
     for (const sceneManager of this._thirdPartySceneManagers.values()) {
-      sceneManager.set(entity.uuid, sceneManager.newObject());
+      sceneManager.set(entity.uuid, sceneManager.newObject(entity));
     }
     return entity;
   }

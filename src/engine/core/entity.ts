@@ -2,10 +2,16 @@ import type { Module } from "./module";
 import { Scene } from "./scene";
 import { Transform } from "./transform";
 
+export enum EntityType {
+  Dynamic = 'dynamic',
+  Static = 'static',
+}
+
 export class Entity {
   public readonly uuid: string = crypto.randomUUID();
   public name: string = '';
   public transform: Transform = new Transform(this);
+  public type: EntityType = EntityType.Dynamic;
 
   private _modules: Record<string, Module> = {};
   private _children: Entity[] = [];
@@ -48,7 +54,7 @@ export class Entity {
     child._parent = this;
     this._children.push(child);
     for (const sceneManager of this._scene!.thirdPartyScenemanagers()) {
-      sceneManager.set(child.uuid, sceneManager.newObject(), this.uuid);
+      sceneManager.set(child.uuid, sceneManager.newObject(child), this.uuid);
     }
     return child;
   }

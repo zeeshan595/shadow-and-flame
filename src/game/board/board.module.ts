@@ -1,16 +1,16 @@
-import { Entity, Module, Vector2, Vector3, Quaternion } from "@/engine/core";
-import { Geometry, GeometryType, Material, MaterialType, MeshModule, Texture } from "@/engine/render";
+import { Core } from "@/engine";
+import { Graphics } from "@/engine/graphics";
 
-export class BoardModule extends Module {
-  private _board: Entity[] = [];
-  private _material: Material;
+export class BoardModule extends Core.Module {
+  private _board: InstanceType<typeof Core.Entity>[] = [];
+  private _material = new Graphics.Material();
 
   constructor() {
     super('board');
-    this._material = new Material(MaterialType.MeshBasicMaterial);
-    this._material.setTexture(new Texture(
-      '/assets/cell.webp'
-    ))
+    this._material = new Graphics.Material(Graphics.MaterialType.MeshBasicMaterial);
+    this._material.color = new Core.Color(1, 1, 1);
+    this._material.opacity = 0.25;
+    this._material.enableAlphaBlending = true;
   }
 
   override onStart(): void {
@@ -18,25 +18,23 @@ export class BoardModule extends Module {
       console.warn('failed to start board module: entity not found')
       return;
     }
-    this.entity.transform.position = new Vector3(0, 0, 0);
-    this.entity.transform.rotation = Quaternion.fromEulerAngles(-20, 0, 0)
+    this.entity.transform.position = new Core.Vector3(-4.5, -3, 2);
+    this.entity.transform.rotation = Core.Quaternion.fromEulerAngles(-90, 0, 0)
     const cellSize = 1;
-    const size = new Vector2(8, 5);
-    const offset = new Vector2(3, 1);
+    const size = new Core.Vector2(10, 6);
+    const offset = new Core.Vector2(0.05, 0.05);
     for (let i = 0; i < size.y; i++) {
       for (let j = 0; j < size.x; j++) {
-        const cell = new Entity();
-        const x = j * cellSize - offset.x;
-        const y = i * cellSize - offset.y;
-        cell.transform.position = new Vector3(x, y, 0);
-        cell.transform.scale = new Vector3(cellSize, cellSize, cellSize);
+        const cell = this.entity.addChild(new Core.Entity());
+        const x = (j * cellSize) + (offset.x * j);
+        const y = (i * cellSize) + (offset.y * i);
+        cell.transform.position = new Core.Vector3(x, y, 0);
+        cell.transform.scale = new Core.Vector3(cellSize, cellSize, cellSize);
         cell.name = 'cell';
-        const mesh = new MeshModule();
+        const mesh = cell.addModule(new Graphics.MeshModule());
         mesh.setMaterial(this._material);
-        mesh.setGeometry(new Geometry(GeometryType.PlaneGeometry));
-        cell.addModule(mesh);
+        mesh.setGeometry(new Graphics.Geometry(Graphics.GeometryType.PlaneGeometry));
         this._board.push(cell);
-        this.entity.addChild(cell);
       }
     }
   }
