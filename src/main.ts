@@ -13,12 +13,6 @@ camera.transform.rotation = Core.Quaternion.fromEulerAngles(-60, 0, 0);
 camera.addModule(new Graphics.CameraModule());
 camera.addModule(new Audio.ListenerModule());
 
-// const cube = engine.scene.addEntity(new Entity());
-// cube.transform.position = new Vector3(3.5, -2, 2.5);
-// const cubeMesh = cube.addModule(new MeshModule());
-// cubeMesh.setMaterial(new Material(MaterialType.MeshStandardMaterial));
-// cubeMesh.setGeometry(new Geometry(GeometryType.BoxGeometry));
-
 const light = Core.engine.scene.addEntity(new Core.Entity());
 light.addModule(new Graphics.LightModule(Graphics.LightType.Ambient)).intensity = 0.1;
 
@@ -27,13 +21,6 @@ const light2Light = light2.addModule(new Graphics.LightModule(Graphics.LightType
 light2Light.castShadows = true;
 light2Light.directionalLightVector = new Core.Vector3(-1, -2, -1);
 // light2Light.target = cube;
-
-// const floor = engine.scene.addEntity(new Entity());
-// floor.transform.position = new Vector3(0, -3, 0);
-// floor.transform.scale = new Vector3(10, 0.1, 6);
-// const floorMesh = floor.addModule(new MeshModule());
-// floorMesh.setMaterial(new Material(MaterialType.MeshStandardMaterial));
-// floorMesh.setGeometry(new Geometry(GeometryType.BoxGeometry));
 
 const board = Core.engine.scene.addEntity(new Core.Entity());
 board.addModule(new BoardModule());

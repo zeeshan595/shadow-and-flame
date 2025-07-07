@@ -1,9 +1,14 @@
 import { Core } from "../core";
-import * as RAPIER from '@dimforge/rapier2d';
+import * as RAPIER from '@dimforge/rapier3d-compat';
+import { Entity } from "../core/entity";
 
 export class RapierSceneManager extends Core.ThirdPartySceneManager<RAPIER.RigidBodyDesc> {
-  private _world = new RAPIER.World(new RAPIER.Vector2(0, 0));
+  private _world = new RAPIER.World(new RAPIER.Vector3(0, 0, 0));
   private _bodies = new Map<string, RAPIER.RigidBody>();
+
+  get bodies(): Map<string, RAPIER.RigidBody> {
+    return this._bodies;
+  }
 
   constructor() {
     super();
@@ -37,4 +42,21 @@ export class RapierSceneManager extends Core.ThirdPartySceneManager<RAPIER.Rigid
       return new RAPIER.RigidBodyDesc(RAPIER.RigidBodyType.Fixed);
     }
   }
+
+  override onPhysics(_: Entity[]): void {
+    this._world.step();
+  }
+}
+
+export function addRapierObjectToScene(uuid: string, body: RAPIER.RigidBodyDesc) {
+  const sceneManager = Core.engine.scene.getThirdPartySceneManager(
+    Core.SupportedThirdPartySceneManager.RapierJs
+  ) as RapierSceneManager;
+  sceneManager.set(uuid, body);
+}
+export function removeRapierObjectFromScene(uuid: string) {
+  const sceneManager = Core.engine.scene.getThirdPartySceneManager(
+    Core.SupportedThirdPartySceneManager.RapierJs
+  ) as RapierSceneManager;
+  sceneManager.delete(uuid);
 }

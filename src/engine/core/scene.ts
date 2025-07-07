@@ -29,11 +29,16 @@ export abstract class ThirdPartySceneManager<T> {
 }
 
 export class Scene {
+  private _entitiesByUuid: Map<string, Entity> = new Map();
   private _entities: Entity[] = [];
   private _thirdPartySceneManagers: Map<SupportedThirdPartySceneManager, ThirdPartySceneManager<any>> = new Map();
 
   public get entities(): Entity[] {
     return this._entities;
+  }
+
+  public get entitiesByUuid(): Map<string, Entity> {
+    return this._entitiesByUuid;
   }
 
   constructor() {
@@ -72,6 +77,7 @@ export class Scene {
   public addEntity(entity: Entity): Entity {
     entity['_scene'] = this;
     this._entities.push(entity);
+    this._entitiesByUuid.set(entity.uuid, entity);
     for (const sceneManager of this._thirdPartySceneManagers.values()) {
       sceneManager.set(entity.uuid, sceneManager.newObject(entity));
     }
@@ -79,12 +85,16 @@ export class Scene {
   }
   public removeEntity(entity: Entity): void {
     this._entities = this._entities.filter(e => e.uuid !== entity.uuid);
+    this._entitiesByUuid.delete(entity.uuid);
     for (const thirdPartyScenes of this._thirdPartySceneManagers.values()) {
       for (const mod of Object.values(entity.getModules())) {
         thirdPartyScenes.delete(mod.uuid);
       }
       thirdPartyScenes.delete(entity.uuid);
     }
+  }
+  public setupEntityUuid(entity: Entity) {
+    this._entitiesByUuid.set(entity.uuid, entity);
   }
   public getModulesOfType<T extends Module>(type: string): T[] {
     const modules: T[] = [];

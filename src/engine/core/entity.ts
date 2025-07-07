@@ -52,6 +52,7 @@ export class Entity {
   }
   public addChild(child: Entity): Entity {
     child._parent = this;
+    this._scene!.setupEntityUuid(child);
     this._children.push(child);
     for (const sceneManager of this._scene!.thirdPartyScenemanagers()) {
       sceneManager.set(child.uuid, sceneManager.newObject(child), this.uuid);
