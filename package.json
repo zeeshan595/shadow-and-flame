@@ -1,0 +1,18 @@
+{
+  "name": "shadow-and-flame",
+  "version": "0.0.1",
+  "description": "A simple game of shadow and flame",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --mode production"
+  },
+  "devDependencies": {
+    "@dimforge/rapier2d": "^0.17.3",
+    "@sveltejs/vite-plugin-svelte": "^5.1.0",
+    "@types/three": "^0.177.0",
+    "svelte": "^5.34.7",
+    "three": "^0.177.0",
+    "vite": "^6.3.5"
+  }
+}
