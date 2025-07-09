@@ -8,23 +8,22 @@ import * as VectorImport from './vector';
 import * as ColorImport from './color';
 import * as SearchImport from './search';
 import * as QuaternionImport from './quaternion'
+import * as EventsImport from './events';
 
 export namespace Core {
   // engine
   export const Engine = EngineImport.Engine;
   export const engine = EngineImport.engine;
   export const EngineEventType = EngineImport.EngineEventType;
+  export const Events = EventsImport.Events;
+  export const EventType = EventsImport.EventType;
 
-  // entity
+  // scene, entity & modules
   export const Entity = EntityImport.Entity;
   export const EntityType = EntityImport.EntityType;
   export const Module = ModuleImport.Module;
   export const System = SystemImport.System;
-
-  // scene
   export const Scene = SceneImport.Scene;
-  export const SupportedThirdPartySceneManager = SceneImport.SupportedThirdPartySceneManager;
-  export const ThirdPartySceneManager = SceneImport.ThirdPartySceneManager;
 
   // data types
   export const Transform = TransformImport.Transform;

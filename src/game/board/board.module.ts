@@ -25,7 +25,7 @@ export class BoardModule extends Core.Module {
     const offset = new Core.Vector2(0.05, 0.05);
     for (let i = 0; i < size.y; i++) {
       for (let j = 0; j < size.x; j++) {
-        const cell = this.entity.addChild(new Core.Entity());
+        const cell = this.entity._addChild(new Core.Entity());
         const x = (j * cellSize) + (offset.x * j);
         const y = (i * cellSize) + (offset.y * i);
         cell.transform.position = new Core.Vector3(x, y, 0);

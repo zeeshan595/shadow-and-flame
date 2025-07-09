@@ -1,4 +1,3 @@
-import { addThreeJsObjectToScene, removeThreeJsObjectFromScene } from "../graphics/scene.manager";
 import { Core } from "@/engine/core";
 import { _static_listener } from "./listener.module";
 import * as THREE from "three";
@@ -9,7 +8,7 @@ export enum SpeakerType {
 }
 
 export class SpeakerModule extends Core.Module {
-  private _object: THREE.Object3D;
+  private _handler: THREE.Object3D;
   private _speaker: THREE.Audio | THREE.PositionalAudio;
   private _speakerType: SpeakerType;
   private _volume: number;
@@ -18,11 +17,11 @@ export class SpeakerModule extends Core.Module {
 
   constructor() {
     super('speaker');
-    this._object = new THREE.Object3D();
+    this._handler = new THREE.Object3D();
     this._speaker = new THREE.Audio(_static_listener) as THREE.Audio;
     this._speaker.hasPlaybackControl = true;
     this._speakerType = SpeakerType.TwoDimensional;
-    this._object.add(this._speaker);
+    this._handler.add(this._speaker);
     this._volume = 1;
     this._loop = false;
     this._autoplay = false;
@@ -105,12 +104,5 @@ export class SpeakerModule extends Core.Module {
         }
       );
     });
-  }
-
-  public onStart(): void {
-    addThreeJsObjectToScene(this.uuid, this._speaker, this.entity.uuid);
-  }
-  public onStop(): void {
-    removeThreeJsObjectFromScene(this.uuid);
   }
 }

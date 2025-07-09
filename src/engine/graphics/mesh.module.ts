@@ -1,5 +1,4 @@
 import type { Material } from "./material";
-import { addThreeJsObjectToScene, removeThreeJsObjectFromScene } from "./scene.manager";
 import { Module } from "@/engine/core/module";
 import { Geometry } from "./geometry";
 import * as THREE from 'three';
@@ -23,16 +22,9 @@ export class MeshModule extends Module {
   constructor() {
     super("renderer");
     this._handler = new THREE.Mesh();
+    this._handler.uuid = this.uuid;
     this._handler.receiveShadow = true;
     this._handler.castShadow = true;
-  }
-
-  public onAttached(): void {
-    addThreeJsObjectToScene(this.uuid, this._handler, this.entity.uuid);
-  }
-
-  public onDetached(): void {
-    removeThreeJsObjectFromScene(this.uuid);
   }
 
   setMaterial(material: Material): void {

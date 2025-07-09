@@ -1,6 +1,5 @@
 import { Core } from "@/engine/core";
 import * as THREE from "three";
-import { addThreeJsObjectToScene, removeThreeJsObjectFromScene } from "../graphics/scene.manager";
 
 export const _static_listener = new THREE.AudioListener();
 
@@ -12,14 +11,6 @@ export class ListenerModule extends Core.Module {
     super('listener');
     this._object = new THREE.Object3D();
     this._object.add(_static_listener);
-  }
-
-  override onAttached(): void {
-    addThreeJsObjectToScene(this.uuid, this._object, this.entity.uuid);
-  }
-
-  override onDetached(): void {
-    removeThreeJsObjectFromScene(this.uuid);
   }
 
   override onRender(): void {

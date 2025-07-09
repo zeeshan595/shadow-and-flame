@@ -1,4 +1,3 @@
-import { addThreeJsObjectToScene, removeThreeJsObjectFromScene } from "./scene.manager";
 import { Module } from "@/engine/core/module";
 import * as THREE from "three";
 
@@ -43,6 +42,7 @@ export class CameraModule extends Module {
         );
         break;
     }
+    this._handler.uuid = this.uuid;
   }
 
   public get fov(): number {
@@ -142,10 +142,8 @@ export class CameraModule extends Module {
 
   public override onAttached(): void {
     addEventListener('resize', (e) => this.onResize(e));
-    addThreeJsObjectToScene(this.uuid, this._handler, this.entity.uuid);
   }
   public override onDetached(): void {
     removeEventListener('resize', (e) => this.onResize(e));
-    removeThreeJsObjectFromScene(this.uuid);
   }
 }

@@ -1,8 +1,3 @@
-import {
-  addThreeJsObjectToScene,
-  removeThreeJsObjectFromScene,
-  ThreeJsSceneManager
-} from "./scene.manager";
 import { Core } from "../core";
 import * as THREE from "three";
 
@@ -138,12 +133,7 @@ export class LightModule extends Core.Module {
         this._handler = new THREE.AmbientLight();
         break;
     }
-  }
-  public override onAttached(): void {
-    addThreeJsObjectToScene(this.uuid, this._handler, this.entity.uuid);
-  }
-  public override onDetached(): void {
-    removeThreeJsObjectFromScene(this.uuid);
+    this._handler.uuid = this.uuid;
   }
   public override onRender(): void {
     if (this.type === LightType.Directional) {
@@ -151,16 +141,16 @@ export class LightModule extends Core.Module {
 
       let directionalLightVector = this.directionalLightVector.multiply(-1);
       if (this._target) {
-        const sceneManager = Core.engine.scene.getThirdPartySceneManager(
-          Core.SupportedThirdPartySceneManager.ThreeJs
-        ) as ThreeJsSceneManager;
-        const targetRef = sceneManager.get(this._target.uuid);
-        if (!targetRef) {
-          throw new Error(`target ${this._target.uuid} not found`);
-        }
-        if (handler.target != targetRef)
-          handler.target = targetRef;
-        directionalLightVector = this.target!.transform.position.add(directionalLightVector);
+        // const sceneManager = Core.engine.scene.getThirdPartySceneManager(
+        //   Core.SupportedThirdPartySceneManager.ThreeJs
+        // ) as ThreeJsSceneManager;
+        // const targetRef = sceneManager.get(this._target.uuid);
+        // if (!targetRef) {
+        //   throw new Error(`target ${this._target.uuid} not found`);
+        // }
+        // if (handler.target != targetRef)
+        //   handler.target = targetRef;
+        // directionalLightVector = this.target!.transform.position.add(directionalLightVector);
       }
       handler.position.set(
         directionalLightVector.x,
