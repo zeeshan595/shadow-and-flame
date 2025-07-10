@@ -46,14 +46,8 @@ export class RenderSystem extends Core.System {
 
     // handle engine events
     Core.engine.events.addEventListener(
-      Core.EventType.SceneChanged, () => this.onSceneChange()
-    );
-    Core.engine.events.addEventListener(
       Core.EventType.EntityAdded,
-      (
-        entity: InstanceType<typeof Core.Entity>,
-        parent?: InstanceType<typeof Core.Entity>
-      ) => this.onEntityAdded(entity, parent)
+      (entity: InstanceType<typeof Core.Entity>) => this.onEntityAdded(entity)
     );
     Core.engine.events.addEventListener(
       Core.EventType.EntityRemoved,
@@ -77,17 +71,9 @@ export class RenderSystem extends Core.System {
   }
   override async onDetached(): Promise<void> {
     removeEventListener('resize', (e) => this.onResize(e));
-
-    Core.engine.events.removeEventListener(
-      Core.EventType.SceneChanged,
-      () => this.onSceneChange()
-    );
     Core.engine.events.removeEventListener(
       Core.EventType.EntityAdded,
-      (
-        entity: InstanceType<typeof Core.Entity>,
-        parent?: InstanceType<typeof Core.Entity>
-      ) => this.onEntityAdded(entity, parent)
+      (entity: InstanceType<typeof Core.Entity>) => this.onEntityAdded(entity)
     );
     Core.engine.events.removeEventListener(
       Core.EventType.EntityRemoved,
@@ -114,15 +100,11 @@ export class RenderSystem extends Core.System {
     this._performance = 0;
     this._fps = 0;
   }
-  private onSceneChange(): void {
-    this._world = new THREE.Scene();
-    this._entityMapping.clear();
-  }
-  private onEntityAdded(entity: InstanceType<typeof Core.Entity>, parent?: InstanceType<typeof Core.Entity>) {
+  private onEntityAdded(entity: InstanceType<typeof Core.Entity>) {
     const obj = new THREE.Object3D();
     obj.uuid = entity.uuid;
-    if (parent) {
-      const parentObj = this._entityMapping.get(parent.uuid);
+    if (entity.parent) {
+      const parentObj = this._entityMapping.get(entity.parent.uuid);
       if (!parentObj) {
         console.warn('failed to add entity: parent not found');
         return;

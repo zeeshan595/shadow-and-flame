@@ -1,6 +1,7 @@
 import { engine } from "./engine";
 import { EventType } from "./events";
 import type { Module } from "./module";
+import { Scene } from "./scene";
 import { Transform } from "./transform";
 
 export enum EntityType {
@@ -17,6 +18,7 @@ export class Entity {
   private _modules: Record<string, Module> = {};
   private _children: Set<Entity> = new Set();
   private _parent: Entity | null = null;
+  private _scene: Scene = new Scene();
 
   constructor(name?: string) {
     if (name) {
@@ -30,12 +32,14 @@ export class Entity {
     module['_entity'] = this;
     this._modules[module.uuid] = module;
     this._modules[module.uuid].onAttached();
-    engine.events.triggerEvent(EventType.ModuleAdded, this._modules[module.uuid]);
+    if (Scene.current === this._scene)
+      engine.events.triggerEvent(EventType.ModuleAdded, this._modules[module.uuid]);
     return module;
   }
   public removeModule(uuid: string): void {
-    engine.events.triggerEvent(EventType.ModuleRemoved, this._modules[uuid]);
     this._modules[uuid].onDetached();
+    if (Scene.current === this._scene)
+      engine.events.triggerEvent(EventType.ModuleRemoved, this._modules[uuid]);
     delete this._modules[uuid];
   }
   public getModuleByUUID<T extends Module>(uuid: string): T | undefined {

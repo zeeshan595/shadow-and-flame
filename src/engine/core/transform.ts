@@ -1,8 +1,9 @@
+import type { Entity } from "./entity";
 import { Vector3 } from "./vector";
 import { Quaternion } from './quaternion';
-import type { Entity } from "./entity";
 import { engine } from "./engine";
 import { EventType } from "./events";
+import { Scene } from "./scene";
 
 export class Transform {
   private _position: Vector3 = new Vector3();
@@ -15,30 +16,36 @@ export class Transform {
   }
   set position(value: Vector3) {
     this._position = value;
-    engine.events.triggerEvent(
-      EventType.EntityTransformChanged,
-      this._entity,
-    );
+    if (this._entity['_scene'] === Scene.current) {
+      engine.events.triggerEvent(
+        EventType.EntityTransformChanged,
+        this._entity,
+      );
+    }
   }
   get rotation(): Quaternion {
     return this._rotation;
   }
   set rotation(value: Quaternion) {
     this._rotation = value;
-    engine.events.triggerEvent(
-      EventType.EntityTransformChanged,
-      this._entity,
-    );
+    if (this._entity['_scene'] === Scene.current) {
+      engine.events.triggerEvent(
+        EventType.EntityTransformChanged,
+        this._entity,
+      );
+    }
   }
   get scale(): Vector3 {
     return this._scale;
   }
   set scale(value: Vector3) {
     this._scale = value;
-    engine.events.triggerEvent(
-      EventType.EntityTransformChanged,
-      this._entity,
-    );
+    if (this._entity['_scene'] === Scene.current) {
+      engine.events.triggerEvent(
+        EventType.EntityTransformChanged,
+        this._entity,
+      );
+    }
   }
 
   constructor(entity: Entity) {

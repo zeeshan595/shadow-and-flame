@@ -4,29 +4,31 @@ import { mount } from 'svelte';
 import UI from './ui.svelte';
 import './font.css';
 import './styles.css';
+import { Scene } from "./engine/core/scene";
 
 const renderingSystem = await Core.engine.addSystem(new Graphics.RendererSystem());
 // await Core.engine.addSystem(new Physics.PhysicsSystem());
 
-const camera = Core.engine.scene.addEntity(new Core.Entity("camera"));
+const scene = new Scene();
+const camera = scene.addEntity(new Core.Entity("camera"));
 camera.transform.position = new Core.Vector3(0, 2, 4);
 camera.transform.rotation = Core.Quaternion.fromEulerAngles(-60, 0, 0);
 camera.addModule(new Graphics.CameraModule());
 camera.addModule(new Audio.ListenerModule());
 
-const light = Core.engine.scene.addEntity(new Core.Entity("light"));
+const light = scene.addEntity(new Core.Entity("light"));
 light.addModule(new Graphics.LightModule(Graphics.LightType.Ambient)).intensity = 0.1;
 
-const light2 = Core.engine.scene.addEntity(new Core.Entity());
+const light2 = scene.addEntity(new Core.Entity());
 const light2Light = light2.addModule(new Graphics.LightModule(Graphics.LightType.Directional));
 light2Light.castShadows = true;
 light2Light.directionalLightVector = new Core.Vector3(-1, -2, -1);
 // light2Light.target = cube;
 
-// const board = Core.engine.scene.addEntity(new Core.Entity());
+// const board = scene.addEntity(new Core.Entity());
 // board.addModule(new BoardModule());
 
-const ground = Core.engine.scene.addEntity(new Core.Entity("ground"));
+const ground = scene.addEntity(new Core.Entity("ground"));
 ground.type = Core.EntityType.Static;
 {
   // const collider = ground.addModule(new Physics.ColliderModule());
@@ -38,7 +40,7 @@ ground.type = Core.EntityType.Static;
   groundMesh.setMaterial(new Graphics.Material(Graphics.MaterialType.MeshStandardMaterial));
 }
 
-const cube = Core.engine.scene.addEntity(new Core.Entity("cube"));
+const cube = scene.addEntity(new Core.Entity("cube"));
 cube.type = Core.EntityType.Dynamic;
 {
   cube.transform.position = new Core.Vector3(0, 1, 0);
@@ -46,6 +48,8 @@ cube.type = Core.EntityType.Dynamic;
   mesh.setGeometry(new Graphics.Geometry(Graphics.GeometryType.BoxGeometry));
   mesh.setMaterial(new Graphics.Material(Graphics.MaterialType.MeshStandardMaterial));
 }
+
+Core.engine.scene = scene;
 
 mount(UI, {
   target: document.getElementById('app')!,

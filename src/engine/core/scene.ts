@@ -10,30 +10,36 @@ export class Scene {
   public static get current(): Scene {
     return engine.scene;
   }
+  public get entities(): Set<Entity> {
+    return this._entities;
+  }
 
   public addEntity(entity: Entity, parent?: Entity): Entity {
-    engine.events.triggerEvent(EventType.EntityAdded, entity);
     this._entities.add(entity);
     this._entitiesByUuid.set(entity.uuid, entity);
+    entity['_scene'] = this;
     if (parent) {
       parent['_children'].add(entity);
       entity['_parent'] = parent;
     }
+    if (Scene.current === this)
+      engine.events.triggerEvent(EventType.EntityAdded, entity);
     return entity;
   }
   public removeEntity(entity: Entity): void {
     for (const module of Object.keys(entity.getModules())) {
       entity.removeModule(module);
     }
+    for (const child of entity.getChildren()) {
+      this.removeEntity(child);
+    }
     if (entity.parent) {
       entity.parent['_children'].delete(entity);
-      for (const child of entity.getChildren()) {
-        this.removeEntity(child);
-      }
     }
     this._entities.delete(entity);
     this._entitiesByUuid.delete(entity.uuid);
-    engine.events.triggerEvent(EventType.EntityRemoved, entity);
+    if (Scene.current === this)
+      engine.events.triggerEvent(EventType.EntityRemoved, entity);
   }
   public getModulesOfType<T extends Module>(type: string): T[] {
     const modules: T[] = [];

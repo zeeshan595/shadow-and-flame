@@ -12,32 +12,33 @@ export enum EventType {
 }
 
 export type SceneChangeEvent = (previousScene: Scene, nextScene: Scene) => void;
-export type SceneEvent = (entity: Entity) => void;
 export type EntityEvent = (entity: Entity) => void;
 export type ModuleEvent = (module: Module) => void;
 
-export type ALL_EVENTS = |
-  SceneEvent |
-  SceneChangeEvent |
-  EntityEvent |
-  ModuleEvent;
-
+export type EventTypeEvent = {
+  [EventType.SceneChanged]: SceneChangeEvent;
+  [EventType.EntityAdded]: EntityEvent;
+  [EventType.EntityRemoved]: EntityEvent;
+  [EventType.EntityTransformChanged]: EntityEvent;
+  [EventType.ModuleAdded]: ModuleEvent;
+  [EventType.ModuleRemoved]: ModuleEvent;
+};
 
 export class Events {
-  private _onEntityAdded: Set<SceneEvent> = new Set();
-  private _onEntityRemoved: Set<SceneEvent> = new Set();
   private _onSceneChanged: Set<SceneChangeEvent> = new Set();
-  private _onEntityTransformChanged: Set<SceneEvent> = new Set();
+  private _onEntityAdded: Set<EntityEvent> = new Set();
+  private _onEntityRemoved: Set<EntityEvent> = new Set();
+  private _onEntityTransformChanged: Set<EntityEvent> = new Set();
   private _onEntityModuleAdded: Set<ModuleEvent> = new Set();
   private _onEntityModuleRemoved: Set<ModuleEvent> = new Set();
 
-  public addEventListener<T extends ALL_EVENTS>(event: EventType, callback: T) {
+  public addEventListener<T extends EventType>(event: T, callback: EventTypeEvent[T]) {
     switch (event) {
       case EventType.EntityAdded:
-        this._onEntityAdded.add(callback as SceneEvent);
+        this._onEntityAdded.add(callback as EntityEvent);
         break;
       case EventType.EntityRemoved:
-        this._onEntityRemoved.add(callback as SceneEvent);
+        this._onEntityRemoved.add(callback as EntityEvent);
         break;
       case EventType.SceneChanged:
         this._onSceneChanged.add(callback as SceneChangeEvent);
@@ -53,13 +54,13 @@ export class Events {
         break;
     }
   }
-  public removeEventListener<T extends ALL_EVENTS>(event: EventType, callback: T) {
+  public removeEventListener<T extends EventType>(event: T, callback: EventTypeEvent[T]) {
     switch (event) {
       case EventType.EntityAdded:
-        this._onEntityAdded.delete(callback as SceneEvent);
+        this._onEntityAdded.delete(callback as EntityEvent);
         break;
       case EventType.EntityRemoved:
-        this._onEntityRemoved.delete(callback as SceneEvent);
+        this._onEntityRemoved.delete(callback as EntityEvent);
         break;
       case EventType.SceneChanged:
         this._onSceneChanged.delete(callback as SceneChangeEvent);
@@ -75,19 +76,19 @@ export class Events {
         break;
     }
   }
-  public triggerEvent(event: EventType, ...args: Parameters<ALL_EVENTS>) {
+  public triggerEvent<T extends EventType>(event: T, ...args: Parameters<EventTypeEvent[T]>) {
     switch (event) {
       case EventType.EntityAdded:
-        this._onEntityAdded.forEach(e => e(...args as Parameters<SceneEvent>));
+        this._onEntityAdded.forEach(e => e(...args as Parameters<EntityEvent>));
         break;
       case EventType.EntityRemoved:
-        this._onEntityRemoved.forEach(e => e(...args as Parameters<SceneEvent>));
+        this._onEntityRemoved.forEach(e => e(...args as Parameters<EntityEvent>));
         break;
       case EventType.SceneChanged:
         this._onSceneChanged.forEach(e => e(...args as Parameters<SceneChangeEvent>));
         break;
       case EventType.EntityTransformChanged:
-        this._onEntityTransformChanged.forEach(e => e(...args as Parameters<SceneEvent>));
+        this._onEntityTransformChanged.forEach(e => e(...args as Parameters<EntityEvent>));
         break;
       case EventType.ModuleAdded:
         this._onEntityModuleAdded.forEach(e => e(...args as Parameters<ModuleEvent>));
