@@ -46,7 +46,7 @@ export class Engine {
   // system
   addSystem<T extends System>(system: T): T {
     this._systems.add(system);
-    this._systemInitPromise.set(system, system.init());
+    this._systemInitPromise.set(system, system.onAttached());
     return system;
   }
   removeSystem(system: System): void {

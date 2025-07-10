@@ -1,5 +1,6 @@
 export class System {
-  async init(): Promise<void> { }
+  async onAttached(): Promise<void> { }
+  async onDetached(): Promise<void> { }
   onPhysics(): void { }
   onRender(): void { }
 }

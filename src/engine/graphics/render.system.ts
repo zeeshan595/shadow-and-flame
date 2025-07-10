@@ -29,7 +29,7 @@ export class RenderSystem extends Core.System {
     this._handler.setSize(value.x, value.y);
   }
 
-  async init(): Promise<void> {
+  async onAttached(): Promise<void> {
     // handle auto resizing
     this._handler.setSize(innerWidth, innerHeight);
     addEventListener('resize', (e) => this.onResize(e));
@@ -74,6 +74,45 @@ export class RenderSystem extends Core.System {
 
     this._handler.setAnimationLoop(() => Core.engine.onRender());
     this._world.background = new THREE.Color('#24273A');
+  }
+  override async onDetached(): Promise<void> {
+    removeEventListener('resize', (e) => this.onResize(e));
+
+    Core.engine.events.removeEventListener(
+      Core.EventType.SceneChanged,
+      () => this.onSceneChange()
+    );
+    Core.engine.events.removeEventListener(
+      Core.EventType.EntityAdded,
+      (
+        entity: InstanceType<typeof Core.Entity>,
+        parent?: InstanceType<typeof Core.Entity>
+      ) => this.onEntityAdded(entity, parent)
+    );
+    Core.engine.events.removeEventListener(
+      Core.EventType.EntityRemoved,
+      (entity: InstanceType<typeof Core.Entity>) => this.onEntityRemoved(entity)
+    );
+    Core.engine.events.removeEventListener(
+      Core.EventType.ModuleAdded,
+      (module: InstanceType<typeof Core.Module>) => this.onModuleAdded(module)
+    );
+    Core.engine.events.removeEventListener(
+      Core.EventType.ModuleRemoved,
+      (module: InstanceType<typeof Core.Module>) => this.onModuleRemoved(module)
+    );
+    Core.engine.events.removeEventListener(
+      Core.EventType.EntityTransformChanged,
+      (entity: InstanceType<typeof Core.Entity>) => this.onEntityTransformChanged(entity)
+    );
+
+    this._handler.dispose();
+    this._world.clear();
+    this._cameras.clear();
+    this._entityMapping.clear();
+    this._dirtyEntities.clear();
+    this._performance = 0;
+    this._fps = 0;
   }
   private onSceneChange(): void {
     this._world = new THREE.Scene();
