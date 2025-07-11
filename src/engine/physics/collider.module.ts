@@ -1,93 +1,86 @@
-import { Core } from "../core";
 import * as RAPIER from '@dimforge/rapier3d-compat';
-import { RapierSceneManager } from "./scene.manager";
-import { RigidBodyModule } from "./rigidbody.module";
+import { Core } from "../core";
+
+export enum ColliderType {
+  Ball = 'ball',
+  Box = 'box',
+  Capsule = 'capsule',
+}
+
+export type BallColliderOptions = {
+  type: ColliderType.Ball,
+  radius: number
+};
+
+export type BoxColliderOptions = {
+  type: ColliderType.Box,
+  halfExtents: InstanceType<typeof Core.Vector3>
+};
+
+export type CapsuleColliderOptions = {
+  type: ColliderType.Capsule,
+  halfHeight: number,
+  radius: number
+};
 
 export class ColliderModule extends Core.Module {
-  private _colliderDescription: RAPIER.ColliderDesc;
+  private _description: RAPIER.ColliderDesc;
   private _collider?: RAPIER.Collider;
-  private _parent?: RAPIER.RigidBody;
 
-  constructor() {
+  get frication(): number {
+    return this._description.friction;
+  }
+  set friction(value: number) {
+    this._description.friction = value;
+  }
+  get density(): number {
+    return this._description.density;
+  }
+  set density(value: number) {
+    this._description.density = value;
+  }
+  get mass(): number {
+    return this._description.mass;
+  }
+  set mass(value: number) {
+    this._description.mass = value;
+  }
+  get sensor(): boolean {
+    return this._description.isSensor;
+  }
+  set sensor(value: boolean) {
+    this._description.setSensor(value);
+  }
+
+  /**
+   * creates a collider
+   * @param options collider type and properties, defaults to ball collider with 0.5 radius
+   */
+  constructor(
+    options?: BallColliderOptions | BoxColliderOptions | CapsuleColliderOptions
+  ) {
     super('collider');
-    this._colliderDescription = RAPIER.ColliderDesc.ball(1);
-  }
-
-  private getParent(): RAPIER.RigidBody | undefined {
-    if (!this.entity.parent) return undefined;
-    const rigidbody = this.entity.parent.getModule("rigidbody");
-    if (!rigidbody) return undefined;
-    const body = (rigidbody as RigidBodyModule).body;
-    return body;
-  }
-
-  override onStart(): void {
-    this._parent = this.getParent();
-    const rapierSceneManager = Core.engine.scene.getThirdPartySceneManager(
-      Core.SupportedThirdPartySceneManager.RapierJs
-    ) as RapierSceneManager;
-    this._collider = rapierSceneManager.world.createCollider(
-      this._colliderDescription,
-      this._parent
-    );
-  }
-
-  override onStop(): void {
-    if (!this._collider) return;
-    const rapierSceneManager = Core.engine.scene.getThirdPartySceneManager(
-      Core.SupportedThirdPartySceneManager.RapierJs
-    ) as RapierSceneManager;
-    rapierSceneManager.world.removeCollider(this._collider, false);
-  }
-
-  createBall(radius: number) {
-    this._colliderDescription.shape = new RAPIER.Ball(radius);
-  }
-  createBox(halfExtents: InstanceType<typeof Core.Vector3>) {
-    this._colliderDescription.shape = new RAPIER.Cuboid(
-      halfExtents.x,
-      halfExtents.y,
-      halfExtents.z
-    );
-  }
-  createCapsule(halfHeight: number, radius: number) {
-    this._colliderDescription.shape = new RAPIER.Capsule(halfHeight, radius);
-  }
-
-  override onPhysics(): void {
-    if (!this._collider) return;
-    if (this._parent) {
-      this._collider.setTranslationWrtParent(
-        new RAPIER.Vector3(
-          this.entity.transform.position.x,
-          this.entity.transform.position.y,
-          this.entity.transform.position.z
-        )
-      );
-      this._collider.setTranslationWrtParent(
-        new RAPIER.Quaternion(
-          this.entity.transform.rotation.x,
-          this.entity.transform.rotation.y,
-          this.entity.transform.rotation.z,
-          this.entity.transform.rotation.w
-        )
-      );
-    } else {
-      this._collider.setTranslation(
-        new RAPIER.Vector3(
-          this.entity.transform.position.x,
-          this.entity.transform.position.y,
-          this.entity.transform.position.z
-        )
-      );
-      this._collider.setRotation(
-        new RAPIER.Quaternion(
-          this.entity.transform.rotation.x,
-          this.entity.transform.rotation.y,
-          this.entity.transform.rotation.z,
-          this.entity.transform.rotation.w
-        )
-      );
+    if (!options) {
+      this._description = RAPIER.ColliderDesc.ball(0.5);
+      return;
+    }
+    switch (options.type) {
+      case ColliderType.Ball:
+        this._description = RAPIER.ColliderDesc.ball(options.radius);
+        break;
+      case ColliderType.Box:
+        this._description = RAPIER.ColliderDesc.cuboid(
+          options.halfExtents.x,
+          options.halfExtents.y,
+          options.halfExtents.z
+        );
+        break;
+      case ColliderType.Capsule:
+        this._description = RAPIER.ColliderDesc.capsule(
+          options.halfHeight,
+          options.radius
+        );
+        break;
     }
   }
 }

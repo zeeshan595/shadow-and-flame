@@ -10,7 +10,6 @@ export enum EngineEventType {
 export class Engine {
   private _scene: Scene = new Scene();
   private _systems: Set<System> = new Set();
-  private _systemInitPromise: Map<System, Promise<void>> = new Map();
   private _events: Events = new Events();
   private _hasUserInteractedWithWindow = false;
 
@@ -65,23 +64,14 @@ export class Engine {
   }
 
   // system
-  addSystem<T extends System>(system: T): T {
+  async addSystem<T extends System>(system: T): Promise<T> {
+    await system.onAttached();
     this._systems.add(system);
-    this._systemInitPromise.set(system, system.onAttached());
     return system;
   }
   async removeSystem(system: System): Promise<void> {
-    const sys = this._systemInitPromise.get(system);
-    if (!sys) {
-      console.warn('system is not initialized');
-      return;
-    }
-    await Promise.all([sys, system.onDetached()]);
+    await system.onDetached();
     this._systems.delete(system);
-    this._systemInitPromise.delete(system);
-  }
-  async waitForSystem(system: System): Promise<void> {
-    return this._systemInitPromise.get(system);
   }
 
   // loop evenets

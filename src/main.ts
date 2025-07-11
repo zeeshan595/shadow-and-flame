@@ -1,17 +1,17 @@
 import { BoardModule } from "./game/board/board.module";
-import { Core, Graphics, Audio } from "@/engine";
+import { Core, Graphics, Audio, Physics } from "@/engine";
 import { mount } from 'svelte';
 import UI from './ui.svelte';
 import './font.css';
 import './styles.css';
 import { Scene } from "./engine/core/scene";
 
-const renderingSystem = await Core.engine.addSystem(new Graphics.RendererSystem());
-// await Core.engine.addSystem(new Physics.PhysicsSystem());
+Core.engine.addSystem(new Graphics.RendererSystem());
+await Core.engine.addSystem(new Physics.PhysicsSystem());
 
 const scene = new Scene();
 const camera = scene.addEntity(new Core.Entity("camera"));
-camera.transform.position = new Core.Vector3(0, 2, 4);
+camera.transform.position = new Core.Vector3(0, 4, 8);
 camera.transform.rotation = Core.Quaternion.fromEulerAngles(-60, 0, 0);
 camera.addModule(new Graphics.CameraModule());
 camera.addModule(new Audio.ListenerModule());
@@ -31,22 +31,35 @@ light2Light.directionalLightVector = new Core.Vector3(-1, -2, -1);
 const ground = scene.addEntity(new Core.Entity("ground"));
 ground.type = Core.EntityType.Static;
 {
-  // const collider = ground.addModule(new Physics.ColliderModule());
-  // collider.createBox(new Core.Vector3(10, 0.1, 5));
-  ground.transform.scale = new Core.Vector3(10, 0.1, 5);
+  const collider = ground.addModule(new Physics.ColliderModule({
+    type: Physics.ColliderType.Box,
+    halfExtents: new Core.Vector3(100, 0.1, 100).multiply(0.5)
+  }));
+  ground.transform.scale = new Core.Vector3(100, 0.1, 100);
   ground.transform.position = new Core.Vector3(0, -2, 1);
+  // collider.createBox(new Core.Vector3(10, 0.1, 5).multiply(0.5));
   const groundMesh = ground.addModule(new Graphics.MeshModule());
   groundMesh.setGeometry(new Graphics.Geometry(Graphics.GeometryType.BoxGeometry));
   groundMesh.setMaterial(new Graphics.Material(Graphics.MaterialType.MeshStandardMaterial));
 }
 
-const cube = scene.addEntity(new Core.Entity("cube"));
-cube.type = Core.EntityType.Dynamic;
-{
-  cube.transform.position = new Core.Vector3(0, 1, 0);
-  const mesh = cube.addModule(new Graphics.MeshModule());
-  mesh.setGeometry(new Graphics.Geometry(Graphics.GeometryType.BoxGeometry));
-  mesh.setMaterial(new Graphics.Material(Graphics.MaterialType.MeshStandardMaterial));
+for (let i = 0; i < 10; i++) {
+  const cube = scene.addEntity(new Core.Entity("cube"));
+  cube.type = Core.EntityType.Dynamic;
+  {
+    cube.transform.position = new Core.Vector3((i % 2) / 4, i, (i % 2) / 4);
+    cube.transform.scale = new Core.Vector3(0.5, 0.5, 0.5);
+    const body = cube.addModule(new Physics.RigidBodyModule());
+    const mesh = cube.addModule(new Graphics.MeshModule());
+    mesh.setGeometry(new Graphics.Geometry(Graphics.GeometryType.BoxGeometry));
+    mesh.setMaterial(new Graphics.Material(Graphics.MaterialType.MeshStandardMaterial));
+
+    const colliderEntity = scene.addEntity(new Core.Entity("collider"), cube);
+    const collider = colliderEntity.addModule(new Physics.ColliderModule({
+      type: Physics.ColliderType.Box,
+      halfExtents: new Core.Vector3(0.5, 0.5, 0.5).divide(2)
+    }));
+  }
 }
 
 Core.engine.scene = scene;
