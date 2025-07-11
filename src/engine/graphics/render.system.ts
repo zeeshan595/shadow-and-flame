@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import { Core } from '@/engine';
 import { CameraModule } from './camera.module';
+import { GraphicsLoader } from './graphics.parser';
 
 export class RenderSystem extends Core.System {
+  private readonly _loader = new GraphicsLoader();
   private readonly _handler = new THREE.WebGLRenderer({
     antialias: true,
     alpha: true
@@ -65,6 +67,7 @@ export class RenderSystem extends Core.System {
       Core.EventType.EntityTransformChanged,
       (entity: InstanceType<typeof Core.Entity>) => this.onEntityTransformChanged(entity)
     );
+    this._loader.addEvents();
 
     this._handler.setAnimationLoop(() => Core.engine.onRender());
     this._world.background = new THREE.Color('#24273A');
@@ -92,6 +95,7 @@ export class RenderSystem extends Core.System {
       (entity: InstanceType<typeof Core.Entity>) => this.onEntityTransformChanged(entity)
     );
 
+    this._loader.removeEvents();
     this._handler.dispose();
     this._world.clear();
     this._cameras.clear();

@@ -4,6 +4,7 @@ import * as RAPIER from '@dimforge/rapier3d-compat';
 import { RigidBodyModule } from "./rigidbody.module";
 import { ColliderModule } from "./collider.module";
 import { Entity } from "../core/entity";
+import { PhysicsJsonParser } from "./physics.parser";
 
 export class PhysicsSystem extends Core.System {
   private _timeout = 0;
@@ -11,6 +12,7 @@ export class PhysicsSystem extends Core.System {
   private _entityMap = new Map<string, InstanceType<typeof Core.Entity>>();
   private _rigidBodyMap = new Map<string, InstanceType<typeof RAPIER.RigidBody>>();
   private _colliderMap = new Map<string, InstanceType<typeof RAPIER.Collider>>();
+  private readonly _loader = new PhysicsJsonParser();
 
   override async onAttached(): Promise<void> {
     await RAPIER.init();
@@ -36,8 +38,10 @@ export class PhysicsSystem extends Core.System {
       (module: InstanceType<typeof Core.Module>) => this.onModuleRemoved(module)
     );
     this._timeout = setInterval(() => engine.onPhysics(), 16);
+    this._loader.addEvents();
   }
   override async onDetached(): Promise<void> {
+    this._loader.removeEvents();
     Core.engine.events.removeEventListener(
       Core.EventType.EntityAdded,
       (entity: InstanceType<typeof Core.Entity>) => this.onEntityAdded(entity)

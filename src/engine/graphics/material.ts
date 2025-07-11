@@ -5,6 +5,7 @@ import { Core } from '../core';
 export enum MaterialType {
   MeshBasicMaterial = 'MeshBasicMaterial',
   MeshStandardMaterial = 'MeshStandardMaterial',
+  MeshPhongMaterial = 'MeshPhongMaterial',
   SpriteMaterial = 'SpriteMaterial',
 }
 
@@ -47,6 +48,9 @@ export class Material {
         break;
       case MaterialType.SpriteMaterial:
         this._material = new THREE.SpriteMaterial();
+        break;
+      case MaterialType.MeshPhongMaterial:
+        this._material = new THREE.MeshPhongMaterial();
         break;
     }
   }

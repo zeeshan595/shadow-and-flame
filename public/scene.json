@@ -1,0 +1,105 @@
+{
+  "$schema": "./schema.json",
+  "entities": [
+    {
+      "name": "camera",
+      "transform": {},
+      "modules": [
+        {
+          "type": "camera"
+        }
+      ]
+    },
+    {
+      "name": "ambientLight",
+      "transform": {},
+      "modules": [
+        {
+          "type": "light",
+          "lightType": "ambient",
+          "intensity": 0.1
+        }
+      ]
+    },
+    {
+      "name": "directionalLight",
+      "transform": {},
+      "modules": [
+        {
+          "type": "light",
+          "lightType": "directional",
+          "directionalVector": {
+            "x": -1,
+            "y": -2,
+            "z": -1
+          }
+        }
+      ]
+    },
+    {
+      "name": "ground",
+      "transform": {
+        "position": {
+          "x": 0,
+          "y": -2,
+          "z": 1
+        },
+        "scale": {
+          "x": 100,
+          "y": 0.1,
+          "z": 100
+        }
+      },
+      "modules": [
+        {
+          "type": "collider",
+          "colliderType": "box",
+          "halfExtents": {
+            "x": 100,
+            "y": 0.1,
+            "z": 100
+          }
+        },
+        {
+          "type": "mesh",
+          "geometryType": "BoxGeometry",
+          "materialType": "MeshPhongMaterial"
+        }
+      ]
+    },
+    {
+      "name": "cube",
+      "transform": {
+        "position": {
+          "x": 0,
+          "y": 2,
+          "z": -3
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "modules": [
+        {
+          "type": "rigidbody"
+        },
+        {
+          "type": "collider",
+          "colliderType": "box",
+          "halfExtents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        {
+          "type": "mesh",
+          "geometryType": "BoxGeometry",
+          "materialType": "MeshPhongMaterial"
+        }
+      ]
+    }
+  ]
+}
