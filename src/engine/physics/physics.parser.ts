@@ -4,7 +4,7 @@ import { RigidBodyModule } from "./rigidbody.module";
 
 export class PhysicsJsonParser {
   addEvents() {
-    Core.SceneJsonParser.addModuleParser('rigidbody', {
+    Core.JsonParser.addModuleParser('rigidbody', {
       fromJson: (m) => this.rigidbodyFromJson(m),
       toJson: (m) => this.rigidBodyToJson(m),
       jsonSchema: {
@@ -15,7 +15,7 @@ export class PhysicsJsonParser {
         }
       }
     });
-    Core.SceneJsonParser.addModuleParser('collider', {
+    Core.JsonParser.addModuleParser('collider', {
       fromJson: (m) => this.colliderFromJson(m),
       toJson: (m) => this.colliderToJson(m),
       jsonSchema: {
@@ -28,14 +28,14 @@ export class PhysicsJsonParser {
           },
           radius: { type: "number" },
           halfHeight: { type: "number" },
-          halfExtents: { "$ref": "#/$defs/vector3" },
+          halfExtents: Core.JsonParser.getObjectSchemaRef('vector3'),
         }
       }
     });
   }
   removeEvents() {
-    Core.SceneJsonParser.removeModuleParser('rigidbody');
-    Core.SceneJsonParser.removeModuleParser('collider');
+    Core.JsonParser.removeModuleParser('rigidbody');
+    Core.JsonParser.removeModuleParser('collider');
   }
 
   private rigidbodyFromJson(module: any): InstanceType<typeof Core.Module> {
@@ -84,8 +84,7 @@ export class PhysicsJsonParser {
     return collider;
   }
 
-  private colliderToJson(module: InstanceType<typeof Core.Module>): any {
-    const collider = module as ColliderModule;
+  private colliderToJson(_: InstanceType<typeof Core.Module>): any {
     return {
       type: "collider",
     };

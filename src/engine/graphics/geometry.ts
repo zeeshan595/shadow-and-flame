@@ -15,7 +15,10 @@ export enum GeometryType {
 export class Geometry {
   private _handler: THREE.BufferGeometry;
 
-  constructor(type?: GeometryType) {
+  constructor(public readonly type?: GeometryType) {
+    if (!type) {
+      type = GeometryType.BoxGeometry;
+    }
     switch (type) {
       default:
       case GeometryType.BoxGeometry:

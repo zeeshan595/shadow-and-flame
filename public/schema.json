@@ -1,6 +1,9 @@
 {
   "type": "object",
   "properties": {
+    "version": {
+      "const": "0.0.1"
+    },
     "entities": {
       "type": "array",
       "items": {
@@ -19,13 +22,19 @@
           "type": "object",
           "properties": {
             "position": {
-              "$ref": "#/$defs/vector3"
+              "$ref": {
+                "$ref": "$#/$defs/objects/vector3"
+              }
             },
             "rotation": {
-              "$ref": "#/$defs/quaternion"
+              "$ref": {
+                "$ref": "$#/$defs/objects/quaternion"
+              }
             },
             "scale": {
-              "$ref": "#/$defs/vector3"
+              "$ref": {
+                "$ref": "$#/$defs/objects/vector3"
+              }
             }
           }
         },
@@ -40,174 +49,194 @@
           "items": {
             "oneOf": [
               {
-                "$ref": "#/$defs/camera"
+                "$ref": "#/$defs/modules/camera"
               },
               {
-                "$ref": "#/$defs/light"
+                "$ref": "#/$defs/modules/light"
               },
               {
-                "$ref": "#/$defs/mesh"
+                "$ref": "#/$defs/modules/mesh"
               },
               {
-                "$ref": "#/$defs/rigidbody"
+                "$ref": "#/$defs/modules/rigidbody"
               },
               {
-                "$ref": "#/$defs/collider"
+                "$ref": "#/$defs/modules/collider"
               }
             ]
           }
         }
       }
     },
-    "camera": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "const": "camera"
+    "modules": {
+      "camera": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "camera"
+          }
+        }
+      },
+      "light": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "light"
+          },
+          "lightType": {
+            "type": "string",
+            "enum": [
+              "directional",
+              "point",
+              "spot",
+              "ambient"
+            ]
+          },
+          "intensity": {
+            "type": "number"
+          },
+          "castShadows": {
+            "type": "boolean"
+          },
+          "color": {
+            "$ref": "$#/$defs/objects/color"
+          },
+          "directionalVector": {
+            "$ref": "$#/$defs/objects/vector3"
+          }
+        }
+      },
+      "mesh": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "mesh"
+          },
+          "gemoetry": {
+            "$ref": "$#/$defs/objects/geometry"
+          },
+          "material": {
+            "$ref": "$#/$defs/objects/material"
+          }
+        }
+      },
+      "rigidbody": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "rigidbody"
+          },
+          "mass": {
+            "type": "number"
+          }
+        }
+      },
+      "collider": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "collider"
+          },
+          "colliderType": {
+            "type": "string",
+            "enum": [
+              "ball",
+              "box",
+              "capsule"
+            ]
+          },
+          "radius": {
+            "type": "number"
+          },
+          "halfHeight": {
+            "type": "number"
+          },
+          "halfExtents": {
+            "$ref": "$#/$defs/objects/vector3"
+          }
         }
       }
     },
-    "light": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "const": "light"
-        },
-        "lightType": {
-          "type": "string",
-          "enum": [
-            "directional",
-            "point",
-            "spot",
-            "ambient"
-          ]
-        },
-        "intensity": {
-          "type": "number"
-        },
-        "castShadows": {
-          "type": "boolean"
-        },
-        "color": {
-          "$ref": "#/$defs/color"
-        },
-        "directionalVector": {
-          "$ref": "#/$defs/vector3"
+    "objects": {
+      "material": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "material"
+          },
+          "opacity": {
+            "type": "number"
+          }
         }
-      }
-    },
-    "mesh": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "const": "mesh"
-        },
-        "geometryType": {
-          "type": "string",
-          "enum": [
-            "BoxGeometry",
-            "SphereGeometry",
-            "PlaneGeometry",
-            "CylinderGeometry",
-            "ConeGeometry",
-            "RingGeometry",
-            "EdgesGeometry",
-            "WireframeGeometry",
-            "Custom"
-          ]
-        },
-        "materialType": {
-          "type": "string",
-          "enum": [
-            "MeshBasicMaterial",
-            "MeshStandardMaterial",
-            "MeshPhongMaterial",
-            "SpriteMaterial"
-          ]
+      },
+      "geometry": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "geometry"
+          }
         }
-      }
-    },
-    "rigidbody": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "const": "rigidbody"
-        },
-        "mass": {
-          "type": "number"
+      },
+      "vector3": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "z": {
+            "type": "number"
+          }
         }
-      }
-    },
-    "collider": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "const": "collider"
-        },
-        "colliderType": {
-          "type": "string",
-          "enum": [
-            "ball",
-            "box",
-            "capsule"
-          ]
-        },
-        "radius": {
-          "type": "number"
-        },
-        "halfHeight": {
-          "type": "number"
-        },
-        "halfExtents": {
-          "$ref": "#/$defs/vector3"
+      },
+      "quaternion": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "z": {
+            "type": "number"
+          },
+          "w": {
+            "type": "number"
+          },
+          "$eulerAngles": {
+            "type": "object",
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              },
+              "z": {
+                "type": "number"
+              }
+            }
+          }
         }
-      }
-    },
-    "vector3": {
-      "type": "object",
-      "properties": {
-        "x": {
-          "type": "number"
-        },
-        "y": {
-          "type": "number"
-        },
-        "z": {
-          "type": "number"
-        }
-      }
-    },
-    "quaternion": {
-      "type": "object",
-      "properties": {
-        "x": {
-          "type": "number"
-        },
-        "y": {
-          "type": "number"
-        },
-        "z": {
-          "type": "number"
-        },
-        "w": {
-          "type": "number"
-        }
-      }
-    },
-    "color": {
-      "type": "object",
-      "properties": {
-        "r": {
-          "type": "number"
-        },
-        "g": {
-          "type": "number"
-        },
-        "b": {
-          "type": "number"
-        },
-        "a": {
-          "type": "number"
+      },
+      "color": {
+        "type": "object",
+        "properties": {
+          "r": {
+            "type": "number"
+          },
+          "g": {
+            "type": "number"
+          },
+          "b": {
+            "type": "number"
+          },
+          "a": {
+            "type": "number"
+          }
         }
       }
     }

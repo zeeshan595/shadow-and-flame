@@ -9,7 +9,7 @@ import * as ColorImport from './color';
 import * as SearchImport from './search';
 import * as QuaternionImport from './quaternion'
 import * as EventsImport from './events';
-import * as SceneJsonParserImport from './sceneJsonParser';
+import * as jsonParserImport from './json.parser';
 
 export namespace Core {
   // engine
@@ -20,7 +20,7 @@ export namespace Core {
   export const EventType = EventsImport.EventType;
 
   // scene json parser
-  export const SceneJsonParser = SceneJsonParserImport.SceneJsonParser;
+  export const JsonParser = jsonParserImport.JsonParser;
 
   // scene, entity & modules
   export const Entity = EntityImport.Entity;

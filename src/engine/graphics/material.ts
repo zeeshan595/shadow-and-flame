@@ -38,6 +38,9 @@ export class Material {
   }
 
   constructor(public readonly type?: MaterialType) {
+    if (!type) {
+      type = MaterialType.MeshPhongMaterial;
+    }
     switch (type) {
       default:
       case MaterialType.MeshBasicMaterial:

@@ -7,7 +7,7 @@ import { Geometry, GeometryType } from './geometry';
 
 export class GraphicsLoader {
   addEvents() {
-    Core.SceneJsonParser.addModuleParser('camera', {
+    Core.JsonParser.addModuleParser('camera', {
       fromJson: (m) => this.cameraFromJson(m),
       toJson: (m) => this.cameraToJson(m),
       jsonSchema: {
@@ -17,7 +17,7 @@ export class GraphicsLoader {
         }
       }
     });
-    Core.SceneJsonParser.addModuleParser('light', {
+    Core.JsonParser.addModuleParser('light', {
       fromJson: (m) => this.lightFromJson(m),
       toJson: (m) => this.lightToJson(m),
       jsonSchema: {
@@ -30,41 +30,58 @@ export class GraphicsLoader {
           },
           intensity: { type: "number" },
           castShadows: { type: "boolean" },
-          color: { "$ref": "#/$defs/color" },
-          directionalVector: { "$ref": "#/$defs/vector3" },
+          color: Core.JsonParser.getObjectSchemaRef('color'),
+          directionalVector: Core.JsonParser.getObjectSchemaRef('vector3'),
         }
       }
     });
-    Core.SceneJsonParser.addModuleParser('mesh', {
+    Core.JsonParser.addModuleParser('mesh', {
       fromJson: (m) => this.meshFromJson(m),
       toJson: (m) => this.meshToJson(m),
       jsonSchema: {
         type: "object",
         properties: {
           type: { const: "mesh" },
-          geometryType: {
-            type: "string",
-            enum: Object.values(GeometryType)
-          },
-          materialType: {
-            type: "string",
-            enum: Object.values(MaterialType)
-          },
+          gemoetry: Core.JsonParser.getObjectSchemaRef("geometry"),
+          material: Core.JsonParser.getObjectSchemaRef("material"),
+        }
+      }
+    });
+    Core.JsonParser.addObjectParser('material', {
+      fromJson: (m) => this.materialFromJson(m),
+      toJson: (m) => this.materialToJson(m),
+      jsonSchema: {
+        type: "object",
+        properties: {
+          type: { const: "material" },
+          opacity: { type: "number" },
+          enableAlphaBlending: { type: "boolean" },
+        }
+      }
+    });
+    Core.JsonParser.addObjectParser('geometry', {
+      fromJson: (m) => this.geometryFromJson(m),
+      toJson: (m) => this.geometryToJson(m),
+      jsonSchema: {
+        type: "object",
+        properties: {
+          type: { const: "geometry" },
         }
       }
     });
   }
   removeEvents() {
-    Core.SceneJsonParser.removeModuleParser('camera');
-    Core.SceneJsonParser.removeModuleParser('light');
-    Core.SceneJsonParser.removeModuleParser('mesh');
+    Core.JsonParser.removeObjectParser('material');
+    Core.JsonParser.removeObjectParser('geometry');
+    Core.JsonParser.removeModuleParser('camera');
+    Core.JsonParser.removeModuleParser('light');
+    Core.JsonParser.removeModuleParser('mesh');
   }
 
-  private cameraFromJson(module: any): InstanceType<typeof Core.Module> {
+  private cameraFromJson(_: any): InstanceType<typeof Core.Module> {
     return new CameraModule();
   }
-  private cameraToJson(module: InstanceType<typeof Core.Module>): any {
-    const camera = module as CameraModule;
+  private cameraToJson(_: InstanceType<typeof Core.Module>): any {
     return {
       type: "camera",
     };
@@ -89,24 +106,12 @@ export class GraphicsLoader {
     }
     light.intensity = module.intensity ?? 1;
     light.castShadows = module.castShadows ?? false;
-    light.color = module.color ?
-      new Core.Color(module.color) :
-      new Core.Color(1, 1, 1);
-    light.directionalLightVector = module.directionalVector ?
-      new Core.Vector3(
-        module.directionalVector.x,
-        module.directionalVector.y,
-        module.directionalVector.z,
-      ) :
-      new Core.Vector3(0, 1, 0);
-    // todo: add support for referencing other entitieis
-    // light.target = 
-
+    light.color = Core.JsonParser.colorFromJson(module.color, new Core.Color(1, 1, 1, 1));
+    light.directionalLightVector = Core.JsonParser.vector3FromJson(module.directionalVector);
 
     return light
   }
-  private lightToJson(module: InstanceType<typeof Core.Module>): any {
-    const light = module as LightModule;
+  private lightToJson(_: InstanceType<typeof Core.Module>): any {
     return {
       type: "light",
     };
@@ -114,14 +119,43 @@ export class GraphicsLoader {
 
   private meshFromJson(module: any): InstanceType<typeof Core.Module> {
     const mesh = new MeshModule();
-    mesh.setGeometry(new Geometry(GeometryType.BoxGeometry));
-    mesh.setMaterial(new Material(MaterialType.MeshPhongMaterial));
+    mesh.setGeometry(this.geometryFromJson(module.geometry));
+    mesh.setMaterial(this.materialFromJson(module.material));
     return mesh;
   }
-  private meshToJson(module: InstanceType<typeof Core.Module>): any {
-    const mesh = module as MeshModule;
+  private meshToJson(_: InstanceType<typeof Core.Module>): any {
     return {
       type: "mesh",
+    };
+  }
+
+  private materialFromJson(json: any): Material {
+    if (!json) {
+      return new Material(MaterialType.MeshPhongMaterial);
+    }
+    const material = new Material(json.type);
+    material.opacity = json.opacity ?? 1;
+    material.enableAlphaBlending = json.enableAlphaBlending ?? false;
+    return material;
+  }
+  private materialToJson(module: Material): any {
+    return {
+      type: module.type,
+      opacity: module.opacity,
+      enableAlphaBlending: module.enableAlphaBlending
+    };
+  }
+
+  private geometryFromJson(json: any): Geometry {
+    if (!json) {
+      return new Geometry(GeometryType.BoxGeometry);
+    }
+    const geometry = new Geometry(json.type);
+    return geometry;
+  }
+  private geometryToJson(module: Geometry): any {
+    return {
+      type: module.type
     };
   }
 }
