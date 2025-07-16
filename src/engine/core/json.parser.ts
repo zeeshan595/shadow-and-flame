@@ -229,6 +229,7 @@ export class JsonParser {
     entityJson: any
   ): InstanceType<typeof Core.Entity> | null {
     const entity = new Core.Entity(entityJson.name);
+    entity.tags = new Set(entityJson.tags);
     JsonParser.transformFromJson(entity, entityJson.transform);
     for (const moduleJson of entityJson.modules ?? []) {
       const module = JsonParser.moduleFromJson(moduleJson);
@@ -269,6 +270,7 @@ export class JsonParser {
     entity: InstanceType<typeof Core.Entity>
   ): any {
     const name = entity.name;
+    const tags = [...entity.tags];
     const transform = JsonParser.transformToJson(entity);
     const modules: any[] = [];
     for (const module of Object.values(entity.getModules())) {
@@ -280,6 +282,7 @@ export class JsonParser {
 
     return {
       name,
+      tags,
       transform,
       modules,
       children

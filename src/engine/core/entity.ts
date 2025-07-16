@@ -14,6 +14,7 @@ export class Entity {
   public name: string = '';
   public transform: Transform = new Transform(this);
   public type: EntityType = EntityType.Dynamic;
+  public tags = new Set<string>();
 
   private _modules: Record<string, Module> = {};
   private _children: Set<Entity> = new Set();

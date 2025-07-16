@@ -49,6 +49,25 @@ export class Scene {
     return modules;
   }
 
+  public getEntitiesByTag(tag: string): Entity[] {
+    const entities: Entity[] = [];
+    for (const entity of this._entities) {
+      if (entity.tags.has(tag)) {
+        entities.push(entity);
+      }
+    }
+    return entities;
+  }
+  public getEntitiesByName(name: string): Entity[] {
+    const entities: Entity[] = [];
+    for (const entity of this._entities) {
+      if (entity.name === name) {
+        entities.push(entity);
+      }
+    }
+    return entities;
+  }
+
   // loop events
   public onStart(): void {
     for (const entity of this._entities) {

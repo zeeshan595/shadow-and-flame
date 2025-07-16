@@ -1,10 +1,6 @@
-import { BoardModule } from "./game/board/board.module";
 import { Core, Graphics, Audio, Physics } from "@/engine";
-import './font.css';
 import './styles.css';
-import { GeometryType } from "./engine/graphics/geometry";
-import { JsonParser } from "./engine/core/json.parser";
-import { MaterialType } from "./engine/graphics/material";
+import './font.css';
 
 await Core.engine.addSystem(new Graphics.RendererSystem());
 await Core.engine.addSystem(new Physics.PhysicsSystem());
@@ -33,7 +29,7 @@ for (let y = -3; y <= 3; y++) {
           type: "mesh",
           geometry: { type: "PlaneGeometry" },
           material: {
-            type: MaterialType.MeshPhongMaterial,
+            type: "MeshPhongMaterial",
             enableAlphaBlending: true,
             opacity: 0.3,
           },
@@ -97,9 +93,10 @@ const scene1 = {
       name: "board",
       children: tiles
     },
-    // cube
+    // character
     {
-      name: "cube",
+      name: "character",
+      tags: ["player"],
       transform: {
         position: { x: 3, y: 1, z: 0 }
       },
@@ -111,9 +108,15 @@ const scene1 = {
     }
   ],
 };
-console.log(JsonParser.getSchema());
-console.log(scene1);
 const scene = Core.JsonParser.fromJson(scene1);
+if (!scene) {
+  throw new Error('failed to lad scene');
+}
+const player = scene.getEntitiesByTag('player')[0];
+if (!player) {
+  throw new Error('failed to find player');
+}
+
 if (scene) {
   Core.engine.scene = scene;
 } else {
