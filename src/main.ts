@@ -5,120 +5,72 @@ import './font.css';
 await Core.engine.addSystem(new Graphics.RendererSystem());
 await Core.engine.addSystem(new Physics.PhysicsSystem());
 
-const tiles = [];
+const scene = new Core.Scene();
+
+// create camera and lighting
+{
+  // camera
+  const camera = scene.addEntity(new Core.Entity("camera"));
+  camera.transform.position = new Core.Vector3(0, 6, 5);
+  camera.transform.rotation = Core.Quaternion.fromEulerAngles(-60, 0, 0);
+  const cameraModule = camera.addModule(new Graphics.CameraModule());
+
+  // ambient light
+  const ambientLight = scene.addEntity(new Core.Entity("ambientLight"));
+  const ambientLightModule = ambientLight.addModule(
+    new Graphics.LightModule(Graphics.LightType.Ambient)
+  );
+  ambientLightModule.intensity = 0.1;
+
+  // directional light
+  const directionalLight = scene.addEntity(new Core.Entity("directionalLight"));
+  const directionalLightModule = directionalLight.addModule(
+    new Graphics.LightModule(Graphics.LightType.Directional)
+  );
+  directionalLightModule.directionalLightVector = new Core.Vector3(1, -2, 1);
+}
+
+// create tiles for the board
 for (let y = -3; y <= 3; y++) {
   for (let x = -5; x <= 5; x++) {
-    tiles.push({
-      name: `tile-${(x + 5)}x${(y + 3)}`,
-      transform: {
-        position: {
-          x: x + (x * 0.1),
-          y: 0,
-          z: y + (y * 0.1)
-        },
-        rotation: {
-          $eulerAngles: {
-            x: -90,
-            y: 0,
-            z: 0
-          }
-        }
-      },
-      modules: [
-        {
-          type: "mesh",
-          geometry: { type: "PlaneGeometry" },
-          material: {
-            type: "MeshPhongMaterial",
-            enableAlphaBlending: true,
-            opacity: 0.3,
-          },
-        },
-        { type: "collider", colliderType: "box", halfExtents: { x: 0.5, y: 0.05, z: 0.5 } },
-      ]
-    });
+    const tile = scene.addEntity(new Core.Entity(`tile-${(x + 5)}x${(y + 3)}`));
+    tile.transform.position = new Core.Vector3(
+      x + (x * 0.1),
+      0,
+      y + (y * 0.1)
+    );
+    tile.transform.rotation = Core.Quaternion.fromEulerAngles(
+      -90, 0, 0
+    );
+    // render
+    const mesh = tile.addModule(new Graphics.MeshModule());
+    mesh.setGeometry(new Graphics.Geometry(Graphics.GeometryType.PlaneGeometry));
+    const material = new Graphics.Material(Graphics.MaterialType.MeshPhongMaterial);
+    material.enableAlphaBlending = true;
+    material.opacity = 0.3;
+    mesh.setMaterial(material);
+
+    // physics
+    tile.addModule(new Physics.ColliderModule({
+      type: Physics.ColliderType.Box,
+      halfExtents: new Core.Vector3(0.5, 0.05, 0.5)
+    }));
   }
 }
 
-const scene1 = {
-  "$schema": "./schema.json",
-  version: "0.0.1",
-  entities: [
-    // camera
-    {
-      name: "camera",
-      transform: {
-        position: {
-          x: 0,
-          y: 6,
-          z: 5
-        },
-        rotation: {
-          $eulerAngles: {
-            x: -60,
-            y: 0,
-            z: 0
-          }
-        }
-      },
-      modules: [{ type: "camera" }]
-    },
-    // light
-    {
-      name: "ambientLight",
-      modules: [
-        {
-          type: "light",
-          lightType: "ambient",
-          intensity: 0.1
-        }
-      ]
-    },
-    {
-      name: "directionalLight",
-      modules: [
-        {
-          type: "light",
-          lightType: "directional",
-          directionalVector: {
-            x: -1,
-            y: -2,
-            z: -1
-          }
-        }
-      ]
-    },
-    // board
-    {
-      name: "board",
-      children: tiles
-    },
-    // character
-    {
-      name: "character",
-      tags: ["player"],
-      transform: {
-        position: { x: 3, y: 1, z: 0 }
-      },
-      modules: [
-        { type: "mesh", geometry: { type: "BoxGeometry" }, material: { type: "MeshPhongMaterial" } },
-        { type: "rigidbody" },
-        { type: "collider", colliderType: "box", halfExtents: { x: 0.5, y: 0.5, z: 0.5 } },
-      ]
-    }
-  ],
-};
-const scene = Core.JsonParser.fromJson(scene1);
-if (!scene) {
-  throw new Error('failed to lad scene');
-}
-const player = scene.getEntitiesByTag('player')[0];
-if (!player) {
-  throw new Error('failed to find player');
+// create player
+{
+  const palyer = scene.addEntity(new Core.Entity("player"));
+  palyer.transform.position = new Core.Vector3(2.1, 0.5, 2.3);
+  palyer.transform.rotation = Core.Quaternion.fromEulerAngles(
+    -90, 0, 0
+  );
+  palyer.transform.scale = new Core.Vector3(0.6, 0.6, 0.6);
+  const mesh = palyer.addModule(new Graphics.MeshModule());
+  mesh.setGeometry(new Graphics.Geometry(Graphics.GeometryType.BoxGeometry));
+  const material = new Graphics.Material(Graphics.MaterialType.MeshPhongMaterial);
+  material.color = new Core.Color(0.5, 0.5, 0.5);
+  mesh.setMaterial(material);
 }
 
-if (scene) {
-  Core.engine.scene = scene;
-} else {
-  console.warn('failed to load scene');
-}
+Core.engine.scene = scene;
