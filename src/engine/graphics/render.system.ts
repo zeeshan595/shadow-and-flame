@@ -70,7 +70,7 @@ export class RenderSystem extends Core.System {
     this._loader.addEvents();
 
     this._handler.setAnimationLoop(() => Core.engine.onRender());
-    this._world.background = new THREE.Color('#24273A');
+    // this._world.background = new THREE.Color('#24273A');
   }
   override async onDetached(): Promise<void> {
     removeEventListener('resize', (e) => this.onResize(e));

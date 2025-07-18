@@ -1,6 +1,8 @@
 import { Core, Graphics, Audio, Physics } from "@/engine";
 import './styles.css';
 import './font.css';
+import { mount } from "svelte";
+import Ui from "./ui.svelte";
 
 await Core.engine.addSystem(new Graphics.RendererSystem());
 await Core.engine.addSystem(new Physics.PhysicsSystem());
@@ -74,3 +76,7 @@ for (let y = -3; y <= 3; y++) {
 }
 
 Core.engine.scene = scene;
+
+mount(Ui, {
+  target: document.getElementById("app")!
+});
