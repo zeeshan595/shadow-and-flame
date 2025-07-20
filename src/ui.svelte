@@ -1,20 +1,27 @@
 <script lang="ts">
   import { Theme } from "@/theme";
+  import ConvexWrapper from "./ui/convex-wrapper.svelte";
 </script>
 
 <div class="card-border" style:--border-color={Theme.Surface0}>
   <div class="card" style:--background-color={Theme.Teal}>
     <div class="top">
       <div class="name">Slash</div>
-      <div class="speed">30</div>
-      <div class="convex-design"></div>
+      <ConvexWrapper position="top-right">
+        <div class="speed">30</div>
+      </ConvexWrapper>
     </div>
     <div class="bottom">
-      <div class="resources">
-        {#each new Array(7).fill(0).map((_, i) => i) as i}
-          <div class="resource"></div>
-        {/each}
-      </div>
+      <ConvexWrapper position="bottom-left">
+        <div class="resources">
+          {#each new Array(2).fill(0).map((_, i) => i) as i}
+            <div
+              class="resource"
+              style:--resource-color={Theme.Rosewater}
+            ></div>
+          {/each}
+        </div>
+      </ConvexWrapper>
       <div class="actions">
         <div class="action">Move 2</div>
         <div class="action">Attack 2</div>
@@ -61,49 +68,6 @@
         border-bottom-left-radius: 35px;
         padding: 20px;
         position: relative;
-
-        &::before,
-        &::after {
-          content: "";
-          position: absolute;
-          background-color: var(--background-color);
-          width: 20px;
-          height: 20px;
-          z-index: 1;
-        }
-
-        &::before {
-          border-top-right-radius: 20px;
-          top: 0;
-          left: -20px;
-        }
-        &::after {
-          border-top-right-radius: 20px;
-          bottom: -20px;
-          right: 0;
-        }
-      }
-      .convex-design {
-        position: relative;
-
-        &::before,
-        &::after {
-          content: "";
-          position: absolute;
-          background-color: var(--border-color);
-          width: 20px;
-          height: 20px;
-          z-index: 0;
-        }
-
-        &::before {
-          top: 0;
-          left: -80px;
-        }
-        &::after {
-          bottom: -20px;
-          right: 0;
-        }
       }
     }
     .bottom {
@@ -133,15 +97,15 @@
         background-color: var(--border-color);
         border-top-right-radius: 20px;
         justify-content: start;
-        align-items: start;
+        align-items: center;
         left: 0;
         bottom: 0;
-        width: 15px;
+        width: 25px;
         padding: 5px;
         padding-top: 15px;
 
         .resource {
-          background-color: blue;
+          background-color: var(--resource-color);
           border-radius: 50%;
           width: 10px;
           height: 10px;
