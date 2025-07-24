@@ -7,5 +7,6 @@ export default {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    extensions: [".ts", ".js", ".svelte"],
   },
 };

@@ -3,27 +3,33 @@ import { ActionType, ALL_ACTIONS, Effect } from "./card";
 export type ModifierFn = (value: ALL_ACTIONS) => ALL_ACTIONS;
 
 function addativeModifier(value: ALL_ACTIONS, delta: number): ALL_ACTIONS {
-  if (value.type === ActionType.Move) return value;
+  if (value.type === ActionType.Move || value.type === ActionType.Resource)
+    return value;
   value.potency += delta;
   return value;
 }
 
-function multiplicativeModifier(value: ALL_ACTIONS, delta: number): ALL_ACTIONS {
-  if (value.type === ActionType.Move) return value;
+function multiplicativeModifier(
+  value: ALL_ACTIONS,
+  delta: number
+): ALL_ACTIONS {
+  if (value.type === ActionType.Move || value.type === ActionType.Resource)
+    return value;
   value.potency *= delta;
   return value;
 }
 
 function missModifier(value: ALL_ACTIONS): ALL_ACTIONS {
-  if (value.type === ActionType.Move) return value;
+  if (value.type === ActionType.Move || value.type === ActionType.Resource)
+    return value;
   value.potency = 0;
   return value;
 }
 
 function effectModifier(value: ALL_ACTIONS, effect: Effect): ALL_ACTIONS {
-  if (value.type === ActionType.Move) return value;
-  if (!value.onHitEffects)
-    value.onHitEffects = [];
+  if (value.type === ActionType.Move || value.type === ActionType.Resource)
+    return value;
+  if (!value.onHitEffects) value.onHitEffects = [];
   if (effect === Effect.Strength) {
     if (value.type === ActionType.Heal) {
       value.onHitEffects.push(effect);
@@ -37,23 +43,26 @@ function effectModifier(value: ALL_ACTIONS, effect: Effect): ALL_ACTIONS {
 }
 
 export enum ModifierType {
-  None = 'none',
-  Miss = 'miss',
-  Additive = 'additive',
-  Multiplicative = 'multiplicative',
-  Stun = 'stun',
-  Burn = 'burn',
-  Poison = 'poison',
-  Weaken = 'weaken',
-  Strength = 'strength',
-};
+  None = "none",
+  Miss = "miss",
+  Additive = "additive",
+  Multiplicative = "multiplicative",
+  Stun = "stun",
+  Burn = "burn",
+  Poison = "poison",
+  Weaken = "weaken",
+  Strength = "strength",
+}
 
 export type Modifier = {
   type: ModifierType;
   value: number;
 };
 
-export function applyModifier(value: ALL_ACTIONS, modifier: Modifier): ALL_ACTIONS {
+export function applyModifier(
+  value: ALL_ACTIONS,
+  modifier: Modifier
+): ALL_ACTIONS {
   switch (modifier.type) {
     case ModifierType.Miss:
       return missModifier(value);
@@ -75,4 +84,37 @@ export function applyModifier(value: ALL_ACTIONS, modifier: Modifier): ALL_ACTIO
     case ModifierType.None:
       return value;
   }
+}
+
+export function createModifiers(): Modifier[] {
+  return [
+    {
+      type: ModifierType.Additive,
+      value: -2,
+    },
+    {
+      type: ModifierType.Additive,
+      value: -1,
+    },
+    {
+      type: ModifierType.Additive,
+      value: 1,
+    },
+    {
+      type: ModifierType.Additive,
+      value: 2,
+    },
+    {
+      type: ModifierType.Miss,
+      value: 0,
+    },
+    {
+      type: ModifierType.Multiplicative,
+      value: 2,
+    },
+    ...new Array(14).fill({
+      type: ModifierType.Additive,
+      value: 0,
+    }),
+  ];
 }
