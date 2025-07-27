@@ -1,12 +1,7 @@
 <script lang="ts">
   import { Theme } from "@/theme";
-  import {
-    ActionType,
-    type Card,
-    type Action,
-    ActionResource,
-  } from "@/game/types/card";
-  import ConvexWrapper from "./convex-wrapper.svelte";
+  import { type Card, type Action, ActionResource } from "@/game/types/card";
+  import ConvexWrapperComponent from "./convex-wrapper.svelte";
 
   type PropType = {
     card: Card;
@@ -61,12 +56,12 @@
   >
     <div class="top">
       <div class="name">{props.card.name}</div>
-      <ConvexWrapper position="top-right">
+      <ConvexWrapperComponent position="top-right">
         <div class="speed">{props.card.speed}</div>
-      </ConvexWrapper>
+      </ConvexWrapperComponent>
     </div>
     <div class="bottom">
-      <ConvexWrapper position="bottom-left">
+      <ConvexWrapperComponent position="bottom-left">
         <div class="resources">
           {#each new Array(2).fill(0).map((_, i) => i) as i}
             <div
@@ -75,7 +70,7 @@
             ></div>
           {/each}
         </div>
-      </ConvexWrapper>
+      </ConvexWrapperComponent>
       <div class="actions">
         {#each props.card.actions as action}
           {@render actionSnippet(action)}
@@ -93,7 +88,7 @@
     background-color: var(--border-color);
     padding: 10px;
     border-radius: 20px;
-    min-width: 200px;
+    min-width: 240px;
     min-height: 300px;
   }
   .card {
@@ -101,7 +96,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    min-width: 200px;
+    min-width: 240px;
     min-height: 300px;
 
     background-color: var(--background-color);
@@ -115,7 +110,7 @@
 
       .name {
         flex-grow: 1;
-        padding-top: 20px;
+        padding-top: 18px;
         color: var(--text-color);
       }
       .speed {

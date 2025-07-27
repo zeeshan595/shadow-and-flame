@@ -31,7 +31,6 @@ export enum ActionResource {
 }
 
 export enum ActionMoveType {
-  BeforeOrAfter = "before-or-after",
   BeforeAction = "before",
   AfterAction = "after",
 }
@@ -68,5 +67,12 @@ export function createCard(card: Omit<Card, "uuid">): Card {
   return {
     ...card,
     uuid: crypto.randomUUID(),
+  };
+}
+
+export function createEmptyAction(): Action {
+  return {
+    type: ActionType.None,
+    target: ActionTargetType.Self,
   };
 }

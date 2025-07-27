@@ -1,0 +1,166 @@
+<script lang="ts" module>
+  export function waitForCardSelection(): Promise<Card> {
+    let roundStoreValue = get(roundStore);
+    roundStore.set({
+      ...roundStoreValue,
+      showCardSelector: true,
+      selectedCard: null,
+    });
+    return new Promise((resolve) => {
+      function waitForSelection() {
+        roundStoreValue = get(roundStore);
+        if (roundStoreValue.selectedCard) {
+          resolve(roundStoreValue.selectedCard);
+          roundStore.set({
+            ...roundStoreValue,
+            showCardSelector: false,
+          });
+        } else {
+          setTimeout(waitForSelection, 100);
+        }
+      }
+      waitForSelection();
+    });
+  }
+</script>
+
+<script lang="ts">
+  import { type Card } from "@/game/types/card";
+  import { Theme } from "@/theme";
+  import { onMount } from "svelte";
+  import { playerStore } from "./data/player";
+  import { get } from "svelte/store";
+  import { roundStore } from "./data/round";
+  import CardSmallComponent from "./components/card-small.svelte";
+  import CardComponent from "./components/card.svelte";
+  import { windowStore } from "./data/window";
+
+  let selectedCard = $state<Card | null>(null);
+  let showSelectedCard = $state(false);
+  let selectedCardIsDiscarded = $state(false);
+  let tooltipRef: HTMLDivElement | null = null;
+
+  function onMouseEnter(card: Card, isDiscarded: boolean = false) {
+    selectedCard = card;
+    showSelectedCard = true;
+    selectedCardIsDiscarded = isDiscarded;
+  }
+  function onMouseLeave() {
+    showSelectedCard = false;
+  }
+  function onMouseMove(e: MouseEvent) {
+    if (!tooltipRef) return;
+    if (!showSelectedCard) return;
+    tooltipRef.style.top = `${e.clientY - $windowStore.paddingY}px`;
+  }
+  function onMouseClick() {
+    if (!selectedCard) return;
+    $roundStore.selectedCard = selectedCard;
+    selectedCard = null;
+  }
+
+  onMount(() => {
+    addEventListener("mousemove", (e) => onMouseMove(e));
+    return () => {
+      removeEventListener("mousemove", (e) => onMouseMove(e));
+    };
+  });
+</script>
+
+{#if $roundStore.showCardSelector}
+  <div class="hand">
+    {#each $playerStore.cards as card}
+      <button
+        class="active"
+        style:--border-color={Theme.Surface0}
+        style:--background-color={Theme.Teal}
+        onmouseenter={() => onMouseEnter(card)}
+        onmouseleave={() => onMouseLeave()}
+        onclick={() => onMouseClick()}
+      >
+        <CardSmallComponent hoverable {card} />
+      </button>
+    {/each}
+    {#if $playerStore.discards.length > 0}
+      <div class="seperator"></div>
+      {#each $playerStore.discards as card}
+        <div
+          class="discard"
+          style:--border-color={Theme.Surface0}
+          style:--background-color={Theme.Teal}
+          onmouseenter={() => onMouseEnter(card, true)}
+          onmouseleave={() => onMouseLeave()}
+          role="tooltip"
+        >
+          <CardSmallComponent {card} />
+        </div>
+      {/each}
+    {/if}
+  </div>
+{/if}
+<div
+  bind:this={tooltipRef}
+  class="card-tooltip"
+  class:discarded={selectedCardIsDiscarded}
+  style:opacity={showSelectedCard ? 1 : 0}
+>
+  {#if selectedCard}
+    <CardComponent card={selectedCard} />
+  {/if}
+</div>
+
+<style>
+  .hand {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 0;
+    left: 0;
+    height: 100%;
+
+    margin-top: 20px;
+    margin-left: 10px;
+    padding-right: 5px;
+
+    gap: 2px;
+
+    overflow-y: auto;
+
+    button {
+      background-color: transparent;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .active,
+    .discard {
+      width: 100%;
+    }
+
+    .discard {
+      filter: grayscale(1);
+      cursor: default;
+    }
+    .seperator {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+      padding-top: 5px;
+      margin-bottom: 5px;
+    }
+  }
+  .card-tooltip {
+    display: block;
+    position: absolute;
+    width: max-content;
+    transition: 0.3s;
+    top: 0;
+    left: 220px;
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.6);
+    border-radius: 20px;
+    pointer-events: none;
+
+    &.discarded {
+      filter: grayscale(1);
+    }
+  }
+</style>

@@ -1,44 +1,29 @@
-import { ActionType, ALL_ACTIONS, Effect } from "./card";
+import { ActionType, Action, ActionStatusEffects } from "./card";
 
-export type ModifierFn = (value: ALL_ACTIONS) => ALL_ACTIONS;
+export type ModifierFn = (value: Action) => Action;
 
-function addativeModifier(value: ALL_ACTIONS, delta: number): ALL_ACTIONS {
-  if (value.type === ActionType.Move || value.type === ActionType.Resource)
-    return value;
-  value.potency += delta;
+function addativeModifier(value: Action, delta: number): Action {
+  if (value.potency) {
+    value.potency += delta;
+  }
   return value;
 }
 
-function multiplicativeModifier(
-  value: ALL_ACTIONS,
-  delta: number
-): ALL_ACTIONS {
-  if (value.type === ActionType.Move || value.type === ActionType.Resource)
-    return value;
-  value.potency *= delta;
+function multiplicativeModifier(value: Action, delta: number): Action {
+  if (value.potency) {
+    value.potency *= delta;
+  }
   return value;
 }
 
-function missModifier(value: ALL_ACTIONS): ALL_ACTIONS {
-  if (value.type === ActionType.Move || value.type === ActionType.Resource)
-    return value;
+function missModifier(value: Action): Action {
   value.potency = 0;
   return value;
 }
 
-function effectModifier(value: ALL_ACTIONS, effect: Effect): ALL_ACTIONS {
-  if (value.type === ActionType.Move || value.type === ActionType.Resource)
-    return value;
-  if (!value.onHitEffects) value.onHitEffects = [];
-  if (effect === Effect.Strength) {
-    if (value.type === ActionType.Heal) {
-      value.onHitEffects.push(effect);
-    }
-  } else {
-    if (value.type === ActionType.Attack) {
-      value.onHitEffects.push(effect);
-    }
-  }
+function effectModifier(value: Action, effect: ActionStatusEffects): Action {
+  if (!value.applyStatusEffect) value.applyStatusEffect = [];
+  value.applyStatusEffect.push(effect);
   return value;
 }
 
@@ -59,10 +44,7 @@ export type Modifier = {
   value: number;
 };
 
-export function applyModifier(
-  value: ALL_ACTIONS,
-  modifier: Modifier
-): ALL_ACTIONS {
+export function applyModifier(value: Action, modifier: Modifier): Action {
   switch (modifier.type) {
     case ModifierType.Miss:
       return missModifier(value);
@@ -71,15 +53,15 @@ export function applyModifier(
     case ModifierType.Multiplicative:
       return multiplicativeModifier(value, modifier.value ?? 1);
     case ModifierType.Stun:
-      return effectModifier(value, Effect.Stun);
+      return effectModifier(value, ActionStatusEffects.Stun);
     case ModifierType.Burn:
-      return effectModifier(value, Effect.Burn);
+      return effectModifier(value, ActionStatusEffects.Burn);
     case ModifierType.Poison:
-      return effectModifier(value, Effect.Poison);
+      return effectModifier(value, ActionStatusEffects.Poison);
     case ModifierType.Weaken:
-      return effectModifier(value, Effect.Weaken);
+      return effectModifier(value, ActionStatusEffects.Weaken);
     case ModifierType.Strength:
-      return effectModifier(value, Effect.Strength);
+      return effectModifier(value, ActionStatusEffects.Strength);
     default:
     case ModifierType.None:
       return value;

@@ -1,14 +1,19 @@
 <script lang="ts">
   import { Theme } from "@/theme";
-  import { ActionType, type Card } from "@/game/types/card";
+  import { type Card } from "@/game/types/card";
 
   type PropType = {
     card: Card;
+    hoverable?: boolean;
   };
   const props: PropType = $props();
 </script>
 
-<div class="card-border" style:--border-color={Theme.Surface0}>
+<div
+  class="card-border"
+  class:hoverable={props.hoverable}
+  style:--border-color={Theme.Surface0}
+>
   <div
     class="card"
     style:--background-color={Theme.Teal}
@@ -24,6 +29,12 @@
 <style>
   div {
     display: flex;
+  }
+  .hoverable {
+    transition: 0.3s;
+    &:hover {
+      box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.6);
+    }
   }
   .card-border {
     background-color: var(--border-color);
@@ -60,6 +71,7 @@
         padding-right: 10px;
         border-top-right-radius: 20px;
         border-bottom-right-radius: 20px;
+        width: 25px;
       }
     }
   }
