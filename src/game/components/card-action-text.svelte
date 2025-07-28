@@ -15,11 +15,6 @@
       {/if}
     </div>
   {/if}
-  {#if action.range}
-    <div class="range">
-      Range {action.range}
-    </div>
-  {/if}
   {#if action.applyStatusEffect}
     {#each action.applyStatusEffect as effect}
       <div class="effect">
@@ -34,6 +29,11 @@
         {resource.amount}
       </div>
     {/each}
+  {/if}
+  {#if action.range}
+    <div class="range">
+      Range {action.range}
+    </div>
   {/if}
   {#if action.movement}
     <div class="move">
@@ -51,7 +51,8 @@
     gap: 10px;
 
     .potency,
-    .move {
+    .move,
+    .resource {
       font-size: 20px;
       color: var(--text-color);
     }

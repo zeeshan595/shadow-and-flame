@@ -32,7 +32,13 @@
         cardsOnCooldown.delete(card[0]);
       }
 
-      const card = await waitForCardSelection();
+      const card = await waitForCardSelection(
+        new Map(
+          [...cardsOnCooldown].map(
+            (v) => [v[0], v[1] - roundNumber] as [string, number]
+          )
+        )
+      );
       for (const action of card.actions) {
         currentAction = action;
         await resolveAction(currentAction);

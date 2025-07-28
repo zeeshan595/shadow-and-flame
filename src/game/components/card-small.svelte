@@ -4,6 +4,7 @@
 
   type PropType = {
     card: Card;
+    cooldown?: string;
     hoverable?: boolean;
   };
   const props: PropType = $props();
@@ -21,7 +22,9 @@
   >
     <div class="top">
       <div class="name">{props.card.name}</div>
-      <div class="speed">{props.card.speed}</div>
+      <div class="speed">
+        {props.cooldown ? props.cooldown : props.card.speed}
+      </div>
     </div>
   </div>
 </div>

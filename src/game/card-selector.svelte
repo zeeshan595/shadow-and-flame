@@ -1,5 +1,11 @@
 <script lang="ts" module>
-  export function waitForCardSelection(): Promise<Card> {
+  let currentCooldowns = $state<Map<string, number>>(new Map());
+  export function waitForCardSelection(
+    cooldowns?: Map<string, number>
+  ): Promise<Card> {
+    if (cooldowns) {
+      currentCooldowns = cooldowns;
+    }
     let roundStoreValue = get(roundStore);
     roundStore.set({
       ...roundStoreValue,
@@ -25,7 +31,7 @@
 </script>
 
 <script lang="ts">
-  import { ActionResource, type Card } from "@/game/types/card";
+  import { type Card } from "@/game/types/card";
   import { Theme } from "@/theme";
   import { onMount } from "svelte";
   import { playerStore } from "./data/player";
@@ -109,7 +115,10 @@
           onmouseleave={() => onMouseLeave()}
           role="tooltip"
         >
-          <CardSmallComponent {card} />
+          <CardSmallComponent
+            {card}
+            cooldown={currentCooldowns.get(card.uuid)?.toString() ?? "-"}
+          />
         </div>
       {/each}
     {/if}
