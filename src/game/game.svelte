@@ -1,16 +1,15 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import ActionSelector, {
-    waitForActionSelection,
-  } from "./action-selector.svelte";
   import { resolveAction } from "./action-resolver";
   import { playerStore } from "./data/player";
+  import { roundStore } from "./data/round";
+  import { type Action } from "./types/card";
   import CardSelector, { waitForCardSelection } from "./card-selector.svelte";
   import Grid from "./components/grid.svelte";
-  import { roundStore } from "./data/round";
-  import { get } from "svelte/store";
+  import CardAction from "./components/card-action.svelte";
 
-  onMount(async () => {
+  let currentAction = $state<Action | null>(null);
+  async function mainLoop() {
     roundStore.update((value) => ({
       ...value,
       characters: [$playerStore],
@@ -34,15 +33,11 @@
       }
 
       const card = await waitForCardSelection();
-      let actionsToResolve = new Set([...card.actions]);
-      while (actionsToResolve.size > 0) {
-        const action = await waitForActionSelection([...actionsToResolve]);
-        if (!action) {
-          break;
-        }
-        await resolveAction(action);
-        actionsToResolve.delete(action);
+      for (const action of card.actions) {
+        currentAction = action;
+        await resolveAction(currentAction);
       }
+      currentAction = null;
 
       // on round end
       if (card.cooldown !== 0) {
@@ -57,9 +52,26 @@
       }
       roundNumber++;
     }
+  }
+
+  onMount(() => {
+    mainLoop();
   });
 </script>
 
 <CardSelector />
-<ActionSelector />
+{#if currentAction !== null}
+  <div class="current-action">
+    {#key currentAction}
+      <CardAction action={currentAction} />
+    {/key}
+  </div>
+{/if}
 <Grid />
+
+<style>
+  .current-action {
+    position: absolute;
+    margin-top: 20px;
+  }
+</style>

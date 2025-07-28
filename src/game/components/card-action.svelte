@@ -3,23 +3,14 @@
   import { Theme } from "@/theme";
 
   type PropType = {
-    customText?: string;
     action: Action;
-    onClick?: () => void;
   };
   const props: PropType = $props();
   const action = props.action;
 </script>
 
-<button
-  class="action-border"
-  style:--border-color={Theme.Surface0}
-  onclick={props.onClick}
->
+<button class="action-border" style:--border-color={Theme.Surface0}>
   <div class="action" style:--background-color={Theme.Teal}>
-    {#if props.customText}
-      {props.customText}
-    {/if}
     {#if action.potency}
       <div class="potency">
         {#if action.potency >= 0}
