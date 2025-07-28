@@ -46,7 +46,7 @@ export type Action = {
   range?: number;
   potency?: number;
   movement?: number;
-  movementType?: ActionMoveType;
+  moveBeforeActionResolution?: boolean;
   effectedSquares?: ActionSquare[];
   applyStatusEffect?: ActionStatusEffects[];
   gainResources?: ResourceCost[];

@@ -1,6 +1,8 @@
 <script lang="ts" module>
   let possibleActions = $state<Action[]>([]);
-  export function waitForActionSelection(actions: Action[]): Promise<Action> {
+  export function waitForActionSelection(
+    actions: Action[]
+  ): Promise<Action | null> {
     possibleActions = actions;
     let roundStoreValue = get(roundStore);
     roundStore.set({
@@ -17,6 +19,8 @@
             ...roundStoreValue,
             showActionSelector: false,
           });
+        } else if (roundStoreValue.showActionSelector === false) {
+          resolve(null);
         } else {
           setTimeout(waitForSelection, 100);
         }
@@ -35,7 +39,13 @@
   function onActionSelected(index: number) {
     $roundStore.selectedAction = possibleActions[index];
   }
-  function onEndTurn() {}
+  function onEndTurn() {
+    roundStore.update((value) => ({
+      ...value,
+      selectedAction: null,
+      showActionSelector: false,
+    }));
+  }
 </script>
 
 {#if $roundStore.showActionSelector}

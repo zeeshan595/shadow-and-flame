@@ -7,8 +7,14 @@
   import { playerStore } from "./data/player";
   import CardSelector, { waitForCardSelection } from "./card-selector.svelte";
   import Grid from "./components/grid.svelte";
+  import { roundStore } from "./data/round";
+  import { get } from "svelte/store";
 
   onMount(async () => {
+    roundStore.update((value) => ({
+      ...value,
+      characters: [() => $playerStore],
+    }));
     let roundNumber = 0;
     let cardsOnCooldown = new Map<string, number>();
     while (true) {
@@ -31,6 +37,9 @@
       let actionsToResolve = new Set([...card.actions]);
       while (actionsToResolve.size > 0) {
         const action = await waitForActionSelection([...actionsToResolve]);
+        if (!action) {
+          break;
+        }
         await resolveAction(action);
         actionsToResolve.delete(action);
       }

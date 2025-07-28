@@ -33,8 +33,8 @@
   import { roundStore } from "../data/round";
   import { playerStore } from "../data/player";
 
-  const GRID_WIDTH = 10;
-  const GRID_HEIGHT = 6;
+  const GRID_WIDTH = 15;
+  const GRID_HEIGHT = 10;
 
   function onClick(x: number, y: number) {
     roundStore.set({
@@ -47,15 +47,11 @@
   const gridData = $derived.by(() => {
     return new Array(GRID_HEIGHT).fill(0).map((_, y) => {
       return new Array(GRID_WIDTH).fill(0).map((_, x) => {
-        const cellContent = $roundStore.gridContent.find(
-          (c) => c[0] === x && c[1] === y
-        );
-        let content: string | null = null;
-        if (x === $playerStore.position[0] && y === $playerStore.position[1]) {
-          content = "PLAYER";
-        } else {
-          content = cellContent ? cellContent[2] : null;
-        }
+        const cellContent = $roundStore.characters.find((c) => {
+          const character = c();
+          return character.position[0] === x && character.position[1] === y;
+        });
+        const content = cellContent ? cellContent().display : null;
 
         const isHighlighted = !!$roundStore.gridHighlights.find(
           (h) => h[0] === x && h[1] === y
@@ -104,8 +100,8 @@
 
       .cell {
         display: flex;
-        width: 150px;
-        height: 150px;
+        width: 100px;
+        height: 100px;
         border-radius: 10px;
         background-color: rgba(0, 0, 0, 0.7);
         transition: 0.5s;

@@ -35,10 +35,16 @@
   import CardComponent from "./components/card.svelte";
   import { windowStore } from "./data/window";
 
+  const sortedCards = $derived(
+    $playerStore.cards.sort((a, b) => a.name.localeCompare(b.name))
+  );
+  const sortedDiscards = $derived(
+    $playerStore.discards.sort((a, b) => a.name.localeCompare(b.name))
+  );
   let selectedCard = $state<Card | null>(null);
+  let tooltipRef: HTMLDivElement | null = null;
   let showSelectedCard = $state(false);
   let selectedCardIsDiscarded = $state(false);
-  let tooltipRef: HTMLDivElement | null = null;
 
   function onMouseEnter(card: Card, isDiscarded: boolean = false) {
     selectedCard = card;
@@ -69,7 +75,7 @@
 
 {#if $roundStore.showCardSelector}
   <div class="hand">
-    {#each $playerStore.cards as card}
+    {#each sortedCards.sort() as card}
       <button
         class="active"
         style:--border-color={Theme.Surface0}
@@ -81,9 +87,9 @@
         <CardSmallComponent hoverable {card} />
       </button>
     {/each}
-    {#if $playerStore.discards.length > 0}
+    {#if sortedDiscards.length > 0}
       <div class="seperator"></div>
-      {#each $playerStore.discards as card}
+      {#each sortedDiscards as card}
         <div
           class="discard"
           style:--border-color={Theme.Surface0}

@@ -9,12 +9,12 @@ export type Position = {
 
 export type Character = {
   uuid: string;
-  name: string;
-  description: string;
   position: [number, number];
   artifacts: Artifact[];
   modifiers: Modifier[];
   cards: Card[];
+  discards: Card[];
+  display: string;
 };
 
 export function createCharacter(character: Omit<Character, "uuid">): Character {

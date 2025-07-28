@@ -1,5 +1,6 @@
 import { writable } from "svelte/store";
 import { Action, Card } from "../types/card";
+import { Character } from "../types/character";
 
 export const roundStore = writable<{
   showCardSelector: boolean;
@@ -9,6 +10,7 @@ export const roundStore = writable<{
   gridHighlights: [number, number][];
   gridContent: [number, number, string][];
   selectedCell: [number, number] | null;
+  characters: (() => Character)[];
 }>({
   showCardSelector: false,
   selectedCard: null,
@@ -17,4 +19,5 @@ export const roundStore = writable<{
   gridHighlights: [],
   gridContent: [],
   selectedCell: null,
+  characters: [],
 });
