@@ -2,50 +2,33 @@
   import { Theme } from "@/theme";
   import { type Card, type Action, ActionResource } from "@/game/types/card";
   import ConvexWrapperComponent from "./convex-wrapper.svelte";
+  import CardActionText from "./card-action-text.svelte";
 
   type PropType = {
     card: Card;
   };
   const props: PropType = $props();
+
+  function getResourceColor(resource: ActionResource): string {
+    switch (resource) {
+      case ActionResource.Stamina:
+        return Theme.Yellow;
+      case ActionResource.Rage:
+        return Theme.Red;
+      case ActionResource.Mana:
+        return Theme.Blue;
+      case ActionResource.Energy:
+        return Theme.Green;
+      case ActionResource.Block:
+        return Theme.Base;
+      default:
+        return Theme.Rosewater;
+    }
+  }
 </script>
 
 {#snippet actionSnippet(action: Action)}
-  <div class="action">
-    {#if action.potency}
-      <span class="potency">
-        {#if action.potency >= 0}
-          Attack {action.potency}
-        {:else}
-          Heal {action.potency}
-        {/if}
-      </span>
-    {/if}
-    {#if action.range}
-      <span class="range">
-        Range {action.range}
-      </span>
-    {/if}
-    {#if action.applyStatusEffect}
-      {#each action.applyStatusEffect as effect}
-        <span class="effect">
-          {effect}
-        </span>
-      {/each}
-    {/if}
-    {#if action.gainResources}
-      {#each action.gainResources as resource}
-        <span class="resource">
-          {ActionResource[resource.resource]}
-          {resource.amount}
-        </span>
-      {/each}
-    {/if}
-    {#if action.movement}
-      <span class="move">
-        Move {action.movement}
-      </span>
-    {/if}
-  </div>
+  <CardActionText {action} />
 {/snippet}
 
 <div class="card-border" style:--border-color={Theme.Surface0}>
@@ -57,20 +40,33 @@
     <div class="top">
       <div class="name">{props.card.name}</div>
       <ConvexWrapperComponent position="top-right">
-        <div class="speed">{props.card.speed}</div>
+        <div class="speed" style:--text-color={Theme.Rosewater}>
+          {props.card.speed}
+        </div>
       </ConvexWrapperComponent>
     </div>
     <div class="bottom">
-      <ConvexWrapperComponent position="bottom-left">
-        <div class="resources">
-          {#each new Array(2).fill(0).map((_, i) => i) as i}
-            <div
-              class="resource"
-              style:--resource-color={Theme.Rosewater}
-            ></div>
-          {/each}
-        </div>
-      </ConvexWrapperComponent>
+      {#if props.card.resourceCost || props.card.cooldown}
+        <ConvexWrapperComponent position="bottom-left">
+          <div class="resources">
+            <div class="cooldown" style:--text-color={Theme.Rosewater}>
+              {props.card.cooldown}
+            </div>
+            {#if props.card.resourceCost}
+              {#each props.card.resourceCost as resourceCost}
+                {#each new Array(resourceCost.amount).fill(0) as _}
+                  <div
+                    class="resource"
+                    style:--resource-color={getResourceColor(
+                      resourceCost.resource
+                    )}
+                  ></div>
+                {/each}
+              {/each}
+            {/if}
+          </div>
+        </ConvexWrapperComponent>
+      {/if}
       <div class="actions">
         {#each props.card.actions as action}
           {@render actionSnippet(action)}
@@ -115,10 +111,11 @@
       }
       .speed {
         background-color: var(--border-color);
-        color: white;
+        color: var(--text-color);
         border-bottom-left-radius: 35px;
         padding: 20px;
         position: relative;
+        font-weight: bold;
       }
     }
     .bottom {
@@ -137,31 +134,11 @@
         gap: 20px;
         padding-right: 20px;
         padding-bottom: 20px;
-
-        .action {
-          flex-direction: column;
-
-          .potency,
-          .move {
-            font-size: 20px;
-            color: var(--text-color);
-          }
-          .range {
-            font-size: 16px;
-            color: var(--text-color);
-          }
-          .effect {
-            font-size: 12px;
-            text-transform: uppercase;
-            font-weight: bold;
-            color: var(--text-color);
-          }
-        }
       }
 
       .resources {
         display: flex;
-        flex-direction: column;
+        flex-direction: column-reverse;
         gap: 10px;
 
         position: relative;
@@ -175,6 +152,10 @@
         padding: 5px;
         padding-top: 15px;
 
+        .cooldown {
+          color: var(--text-color);
+          font-weight: bold;
+        }
         .resource {
           background-color: var(--resource-color);
           border-radius: 50%;

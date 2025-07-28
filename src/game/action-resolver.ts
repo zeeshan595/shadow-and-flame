@@ -103,11 +103,14 @@ function getRelativeSquares(
   squares: [number, number][],
   currentPosition: [number, number]
 ) {
-  for (let i = 0; i < squares.length; i++) {
-    squares[i][0] += currentPosition[0];
-    squares[i][1] += currentPosition[1];
+  const relativeSquares = [
+    ...squares.map((s) => [s[0], s[1]] as [number, number]),
+  ];
+  for (let i = 0; i < relativeSquares.length; i++) {
+    relativeSquares[i][0] += currentPosition[0];
+    relativeSquares[i][1] += currentPosition[1];
   }
-  return squares;
+  return relativeSquares;
 }
 
 function getCharacterFromPosition(

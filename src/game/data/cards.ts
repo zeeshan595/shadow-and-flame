@@ -57,6 +57,12 @@ export const cards: Card[] = [
         movement: 5,
       },
     ],
+    resourceCost: [
+      {
+        resource: ActionResource.Rage,
+        amount: 1,
+      },
+    ],
   }),
   createCard({
     name: "Slam",

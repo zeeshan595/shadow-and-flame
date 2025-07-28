@@ -25,7 +25,7 @@
 </script>
 
 <script lang="ts">
-  import { type Card } from "@/game/types/card";
+  import { ActionResource, type Card } from "@/game/types/card";
   import { Theme } from "@/theme";
   import { onMount } from "svelte";
   import { playerStore } from "./data/player";
@@ -59,8 +59,18 @@
     if (!showSelectedCard) return;
     tooltipRef.style.top = `${e.clientY - $windowStore.paddingY}px`;
   }
+  function playerHasResources(card: Card): boolean {
+    if (!card.resourceCost) return true;
+    for (const cost of card.resourceCost) {
+      const playerResource = $playerStore.resources.get(cost.resource);
+      if (!playerResource) return false;
+      if (playerResource < cost.amount) return false;
+    }
+    return true;
+  }
   function onMouseClick() {
     if (!selectedCard) return;
+    if (!playerHasResources(selectedCard)) return;
     $roundStore.selectedCard = selectedCard;
     selectedCard = null;
   }
@@ -78,6 +88,7 @@
     {#each sortedCards.sort() as card}
       <button
         class="active"
+        class:need-resources={!playerHasResources(card)}
         style:--border-color={Theme.Surface0}
         style:--background-color={Theme.Teal}
         onmouseenter={() => onMouseEnter(card)}
@@ -142,6 +153,10 @@
     .active,
     .discard {
       width: 100%;
+    }
+
+    .need-resources {
+      filter: brightness(0.8) saturate(0.3) sepia(0.1);
     }
 
     .discard {

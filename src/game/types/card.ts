@@ -1,3 +1,5 @@
+import { Character } from "./character";
+
 export enum ActionTargetType {
   Self = "self",
   Other = "other",
@@ -47,6 +49,8 @@ export type Action = {
   applyStatusEffect?: ActionStatusEffects[];
   /** any resources the target should gain */
   gainResources?: ResourceCost[];
+  /** summon action properties */
+  summon?: Character;
 };
 
 export type Card = {

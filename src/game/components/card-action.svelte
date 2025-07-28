@@ -1,50 +1,17 @@
 <script lang="ts">
-  import { ActionResource, type Action } from "@/game/types/card";
+  import { type Action } from "@/game/types/card";
   import { Theme } from "@/theme";
+  import CardActionText from "./card-action-text.svelte";
 
   type PropType = {
     action: Action;
   };
   const props: PropType = $props();
-  const action = props.action;
 </script>
 
 <button class="action-border" style:--border-color={Theme.Surface0}>
   <div class="action" style:--background-color={Theme.Teal}>
-    {#if action.potency}
-      <div class="potency">
-        {#if action.potency >= 0}
-          Attack {action.potency}
-        {:else}
-          Heal {action.potency}
-        {/if}
-      </div>
-    {/if}
-    {#if action.range}
-      <div class="range">
-        Range {action.range}
-      </div>
-    {/if}
-    {#if action.applyStatusEffect}
-      {#each action.applyStatusEffect as effect}
-        <div class="effect">
-          {effect}
-        </div>
-      {/each}
-    {/if}
-    {#if action.gainResources}
-      {#each action.gainResources as resource}
-        <div class="resource">
-          {ActionResource[resource.resource]}
-          {resource.amount}
-        </div>
-      {/each}
-    {/if}
-    {#if action.movement}
-      <div class="move">
-        Move {action.movement}
-      </div>
-    {/if}
+    <CardActionText action={props.action} />
   </div>
 </button>
 
@@ -71,10 +38,5 @@
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
     padding: 10px;
-    gap: 10px;
-
-    div {
-      display: flex;
-    }
   }
 </style>
