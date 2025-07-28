@@ -31,7 +31,6 @@
 
 <script lang="ts">
   import { roundStore } from "../data/round";
-  import { playerStore } from "../data/player";
 
   const GRID_WIDTH = 15;
   const GRID_HEIGHT = 10;
@@ -47,11 +46,10 @@
   const gridData = $derived.by(() => {
     return new Array(GRID_HEIGHT).fill(0).map((_, y) => {
       return new Array(GRID_WIDTH).fill(0).map((_, x) => {
-        const cellContent = $roundStore.characters.find((c) => {
-          const character = c();
-          return character.position[0] === x && character.position[1] === y;
-        });
-        const content = cellContent ? cellContent().display : null;
+        const cellContent = $roundStore.characters.find(
+          (c) => c.position[0] === x && c.position[1] === y
+        );
+        const content = cellContent ? cellContent.display : null;
 
         const isHighlighted = !!$roundStore.gridHighlights.find(
           (h) => h[0] === x && h[1] === y

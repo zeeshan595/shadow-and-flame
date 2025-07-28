@@ -1,5 +1,5 @@
 import { Artifact } from "./artifact";
-import { Card } from "./card";
+import { ActionResource, ActionStatusEffects, Card } from "./card";
 import { Modifier } from "./modifiers";
 
 export type Position = {
@@ -8,12 +8,22 @@ export type Position = {
 };
 
 export type Character = {
+  // basic
   uuid: string;
   position: [number, number];
+
+  // stats
+  health: number;
+  resources: Map<ActionResource, number>;
+  effects: Set<ActionStatusEffects>;
+
+  // other
   artifacts: Artifact[];
   modifiers: Modifier[];
   cards: Card[];
   discards: Card[];
+
+  // rendering
   display: string;
 };
 

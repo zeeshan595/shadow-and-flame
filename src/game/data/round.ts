@@ -10,7 +10,7 @@ export const roundStore = writable<{
   gridHighlights: [number, number][];
   gridContent: [number, number, string][];
   selectedCell: [number, number] | null;
-  characters: (() => Character)[];
+  characters: Character[];
 }>({
   showCardSelector: false,
   selectedCard: null,

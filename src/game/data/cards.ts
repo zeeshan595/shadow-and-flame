@@ -2,7 +2,6 @@ import {
   ActionResource,
   ActionStatusEffects,
   ActionTargetType,
-  ActionType,
   Card,
   createCard,
 } from "../types/card";
@@ -13,13 +12,16 @@ export const cards: Card[] = [
     speed: 30,
     actions: [
       {
-        type: ActionType.Melee,
         target: ActionTargetType.Other,
         potency: 2,
-        range: 1,
+        range: [
+          [0, 1],
+          [1, 0],
+          [0, -1],
+          [-1, 0],
+        ],
       },
       {
-        type: ActionType.None,
         target: ActionTargetType.Self,
         movement: 2,
       },
@@ -31,7 +33,6 @@ export const cards: Card[] = [
     cooldown: 1,
     actions: [
       {
-        type: ActionType.None,
         target: ActionTargetType.Self,
         gainResources: [
           {
@@ -52,7 +53,6 @@ export const cards: Card[] = [
     cooldown: 2,
     actions: [
       {
-        type: ActionType.None,
         target: ActionTargetType.Self,
         movement: 5,
       },
@@ -64,14 +64,17 @@ export const cards: Card[] = [
     cooldown: 3,
     actions: [
       {
-        type: ActionType.Melee,
         target: ActionTargetType.Other,
         applyStatusEffect: [ActionStatusEffects.Stun],
         potency: 4,
-        range: 1,
+        range: [
+          [0, 1],
+          [1, 0],
+          [0, -1],
+          [-1, 0],
+        ],
       },
       {
-        type: ActionType.None,
         target: ActionTargetType.Self,
         movement: 2,
       },

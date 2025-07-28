@@ -13,7 +13,7 @@
   onMount(async () => {
     roundStore.update((value) => ({
       ...value,
-      characters: [() => $playerStore],
+      characters: [$playerStore],
     }));
     let roundNumber = 0;
     let cardsOnCooldown = new Map<string, number>();
