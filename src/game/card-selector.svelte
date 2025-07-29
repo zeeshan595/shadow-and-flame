@@ -128,6 +128,9 @@
   bind:this={tooltipRef}
   class="card-tooltip"
   class:discarded={selectedCardIsDiscarded}
+  class:need-resources={selectedCard
+    ? !playerHasResources(selectedCard)
+    : false}
   style:opacity={showSelectedCard ? 1 : 0}
 >
   {#if selectedCard}
@@ -189,6 +192,9 @@
     border-radius: 20px;
     pointer-events: none;
 
+    &.need-resources {
+      filter: brightness(0.9) saturate(0.4) sepia(0.1);
+    }
     &.discarded {
       filter: grayscale(1);
     }
